@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Yorkshire Canil Brazil - Blog</title>
+    <link>https://www.yorkshirecanilbrazil.com.br/blog/</link>
+    <description>Dicas, curiosidades e guias sobre Yorkshire Terrier</description>
+    <language>pt-BR</language>
+    <atom:link href="https://www.yorkshirecanilbrazil.com.br/blog/feed.xml" rel="self" type="application/rss+xml"/>
+
+    <item>
+      <title>Como Escolher um Canil de Yorkshire Confiável</title>
+      <link>https://www.yorkshirecanilbrazil.com.br/blog/como-escolher-canil-yorkshire-confiavel.html</link>
+      <description>Aprenda como escolher um canil de Yorkshire confiável: sinais de criadores sérios e como evitar golpes.</description>
+      <pubDate>Sat, 25 Jan 2025 00:00:00 -0300</pubDate>
+      <guid>https://www.yorkshirecanilbrazil.com.br/blog/como-escolher-canil-yorkshire-confiavel.html</guid>
+    </item>
+
+    <item>
+      <title>Temperamento do Yorkshire Terrier: Tudo que Você Precisa Saber</title>
+      <link>https://www.yorkshirecanilbrazil.com.br/blog/yorkshire-terrier-temperamento-personalidade.html</link>
+      <description>Conheça o temperamento e personalidade do Yorkshire Terrier: comportamento, convivência com crianças e nível de energia.</description>
+      <pubDate>Mon, 20 Jan 2025 00:00:00 -0300</pubDate>
+      <guid>https://www.yorkshirecanilbrazil.com.br/blog/yorkshire-terrier-temperamento-personalidade.html</guid>
+    </item>
+
+    <item>
+      <title>Como Cuidar de um Filhote de Yorkshire Terrier</title>
+      <link>https://www.yorkshirecanilbrazil.com.br/blog/como-cuidar-filhote-yorkshire.html</link>
+      <description>Guia completo de como cuidar de um filhote de Yorkshire Terrier: alimentação, vacinas, banho, higiene e os primeiros dias em casa.</description>
+      <pubDate>Wed, 15 Jan 2025 00:00:00 -0300</pubDate>
+      <guid>https://www.yorkshirecanilbrazil.com.br/blog/como-cuidar-filhote-yorkshire.html</guid>
+    </item>
+  </channel>
+</rss>

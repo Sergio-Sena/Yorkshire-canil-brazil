@@ -1,0 +1,8 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "no-descending-specificity": null,
+    "property-no-vendor-prefix": [true, { "ignoreProperties": ["backdrop-filter"] }],
+    "length-zero-no-unit": [true, { "ignoreFunctions": ["radial-gradient", "linear-gradient"] }]
+  }
+}

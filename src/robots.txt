@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /
+
+# Liberar após deploy final:
+# User-agent: *
+# Allow: /
+# Sitemap: https://www.yorkshirecanilbrazil.com.br/sitemap.xml
