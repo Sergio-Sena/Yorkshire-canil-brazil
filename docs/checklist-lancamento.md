@@ -163,3 +163,60 @@
 - [ ] Monitorar performance no PageSpeed (manter acima de 90)
 - [ ] Atualizar sitemap.xml ao adicionar novas páginas
 - [ ] Revisar e responder comentários/mensagens
+
+---
+
+## 5. Estratégia de Migração (Wix → Novo Site)
+
+### Situação Atual
+- Domínio `yorkshirecanilbrazil.com.br` ativo no Wix
+- Contrato Wix vigente
+- Novo site pronto para deploy
+
+### Fase 1 — Preview (agora)
+- [ ] Novo site no GitHub Pages para aprovação: `sergio-sena.github.io/Yorkshire-canil-brazil`
+- [ ] Cliente testa e aprova
+- [ ] Wix continua ativo normalmente
+
+### Fase 2 — Subdomínio (após aprovação)
+- [ ] Criar conta Cloudflare Pages (grátis)
+- [ ] Deploy do novo site no Cloudflare Pages
+- [ ] No painel DNS do Wix, criar CNAME: `novo.yorkshirecanilbrazil.com.br` → Cloudflare Pages
+- [ ] Cliente acessa `novo.yorkshirecanilbrazil.com.br` para validação final
+- [ ] Site Wix continua ativo em `yorkshirecanilbrazil.com.br`
+
+### Fase 3 — Virada (quando 100% aprovado)
+- [ ] No painel DNS, apontar `yorkshirecanilbrazil.com.br` para Cloudflare Pages
+- [ ] Ou transferir DNS para Cloudflare (grátis, mais controle)
+- [ ] Testar domínio principal no novo site
+- [ ] Remover `noindex` e ativar SEO
+- [ ] Descomentar canonical
+- [ ] Atualizar robots.txt
+- [ ] Submeter sitemap no Google Search Console
+
+### Fase 4 — Desativar Wix (quando contrato vencer)
+- [ ] Cancelar plano Wix
+- [ ] Confirmar que DNS não depende mais do Wix
+- [ ] Economia mensal do plano Wix
+
+### Hosting Recomendado por Fase
+
+| Fase | Hosting | Custo | CDN |
+|------|---------|-------|-----|
+| Preview | GitHub Pages | Grátis | Fastly |
+| Produção | Cloudflare Pages | Grátis | Cloudflare Global |
+| Se crescer muito | S3 + CloudFront | ~$5-10/mês | AWS Global |
+
+### Por que Cloudflare Pages?
+- Grátis (sem limite de banda)
+- CDN global (mais rápido que S3 para sites estáticos)
+- SSL automático
+- Deploy automático via GitHub
+- Custom domain fácil
+- Zero manutenção
+
+### Quando migrar para S3 + CloudFront?
+- Tráfego acima de 100k visitas/mês
+- Necessidade de controle avançado (Lambda@Edge, headers custom)
+- Vídeos muito pesados que precisem de streaming adaptativo (HLS)
+- Integração com outros serviços AWS

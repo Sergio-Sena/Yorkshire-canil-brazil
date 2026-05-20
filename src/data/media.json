@@ -1,12 +1,5 @@
 {
-  "filhotes": [
-    { "src": "images/pezibear-yorkshire-terrier-6202621_1920.jpg", "nome": "Filhote Disponível", "info": "Macho • Pedigree CBKC" },
-    { "src": "images/istockphoto-1221576228-612x612.jpg", "nome": "Filhote Disponível", "info": "Fêmea • Pedigree CBKC" },
-    { "src": "images/istockphoto-1231537922-612x612.jpg", "nome": "Filhote Disponível", "info": "Macho • Pedigree CBKC" },
-    { "src": "images/istockphoto-1372814964-612x612.jpg", "nome": "Filhote Disponível", "info": "Fêmea • Pedigree CBKC" },
-    { "src": "images/istockphoto-2188920766-612x612.jpg", "nome": "Filhote Disponível", "info": "Macho • Pedigree CBKC" },
-    { "src": "images/istockphoto-637117392-612x612.jpg", "nome": "Filhote Disponível", "info": "Fêmea • Pedigree CBKC" }
-  ],
+  "filhotes": [],
   "famosos": [
     { "src": "videos/famoso-celso-01.mp4" },
     { "src": "videos/famoso-cristhian.mp4" },

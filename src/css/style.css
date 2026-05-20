@@ -162,15 +162,12 @@ details summary:focus-visible {
   padding: 0.5rem;
   font-size: 0.8rem;
   font-weight: 600;
-  position: sticky;
-  top: 0;
-  z-index: 200;
 }
 
 /* ===== HEADER (Glassmorphism) ===== */
 header {
   position: sticky;
-  top: 1.8rem;
+  top: 0;
   z-index: 100;
   background: rgb(15 23 42 / 80%);
   backdrop-filter: blur(12px) saturate(1.5);
@@ -957,6 +954,7 @@ details p {
 
 .blog-card h3 a {
   color: var(--color-primary);
+  font-size: 0.85rem;
 }
 
 .blog-card h3 a:hover {
@@ -1052,6 +1050,14 @@ details p {
 
 .blog-listing h1 {
   margin-bottom: var(--spacing-md);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+}
+
+.blog-back {
+  display: inline-block;
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* ===== FOOTER ===== */
@@ -1180,6 +1186,8 @@ footer {
 
 .blog-post h1 {
   margin-bottom: var(--spacing-xs);
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  white-space: nowrap;
 }
 
 .blog-post time {
