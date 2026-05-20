@@ -19,7 +19,7 @@
   --color-glass: rgb(10 15 26 / 50%);
   --color-glass-border: rgb(14 165 233 / 15%);
   --font-main: "Montserrat", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-heading: "Playfair Display", Georgia, serif;
+  --font-heading: "Playfair Display", georgia, serif;
   --max-width: 1100px;
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
@@ -758,10 +758,6 @@ h3 {
 
 #famosos, #emocoes {
   text-align: center;
-}
-
-#filhotes {
-  overflow: hidden;
 }
 
 /* ===== CAROUSEL ===== */
