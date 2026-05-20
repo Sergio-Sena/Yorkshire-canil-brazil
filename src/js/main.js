@@ -96,10 +96,12 @@ async function loadMedia() {
 
     if (famososGrid && data.famosos) {
       renderCarousel(famososGrid, data.famosos, "video");
+      lazyLoadVideos(famososGrid);
     }
 
     if (emocoesGrid && data.emocoes) {
       renderCarousel(emocoesGrid, data.emocoes, "video");
+      lazyLoadVideos(emocoesGrid);
     }
   } catch (e) {
     console.error("Erro ao carregar mídias:", e);
@@ -116,7 +118,7 @@ function renderCarousel(container, items, type) {
   items.forEach(item => {
     if (type === "filhote") {
       track.innerHTML += `<div class="filhote-card">
-        <img src="${item.src}" alt="${item.nome}" loading="lazy" />
+        <img src="${item.src}" alt="${item.nome}" loading="lazy" width="280" height="280" />
         <div class="filhote-info">
           <h3>${item.nome}</h3>
           <p>${item.info}</p>
@@ -124,8 +126,7 @@ function renderCarousel(container, items, type) {
       </div>`;
     } else {
       track.innerHTML += `<div class="video-item">
-        <video controls preload="metadata">
-          <source src="${item.src}" type="video/mp4">
+        <video controls preload="none" data-src="${item.src}">
         </video>
       </div>`;
     }
@@ -167,3 +168,22 @@ function renderCarousel(container, items, type) {
 }
 
 loadMedia();
+
+// Lazy load videos only when visible
+function lazyLoadVideos(container) {
+  const videos = container.querySelectorAll("video[data-src]");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const video = entry.target;
+        const src = video.getAttribute("data-src");
+        video.innerHTML = `<source src="${src}" type="video/mp4">`;
+        video.removeAttribute("data-src");
+        video.preload = "metadata";
+        observer.unobserve(video);
+      }
+    });
+  }, { rootMargin: "200px" });
+
+  videos.forEach((video) => observer.observe(video));
+}
