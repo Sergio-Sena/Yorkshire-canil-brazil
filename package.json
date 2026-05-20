@@ -1,0 +1,24 @@
+{
+  "name": "yorkshire-canil-brazil",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Landing page estática para Yorkshire Canil Brasil",
+  "scripts": {
+    "dev": "npx live-server src --port=3000",
+    "lint:css": "npx stylelint \"src/css/**/*.css\"",
+    "lint:js": "npx eslint \"src/js/**/*.js\"",
+    "lint": "npm run lint:css && npm run lint:js",
+    "build": "node build.js",
+    "test": "npx lighthouse http://localhost:3000 --output=json --output-path=./lighthouse-report.json --chrome-flags=\"--headless\""
+  },
+  "devDependencies": {
+    "clean-css": "^5.3.0",
+    "eslint": "^9.0.0",
+    "html-minifier-terser": "^7.2.0",
+    "htmlhint": "^1.1.0",
+    "live-server": "^1.2.2",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^36.0.0",
+    "terser": "^5.30.0"
+  }
+}
