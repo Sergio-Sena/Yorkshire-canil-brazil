@@ -220,3 +220,86 @@
 - Necessidade de controle avançado (Lambda@Edge, headers custom)
 - Vídeos muito pesados que precisem de streaming adaptativo (HLS)
 - Integração com outros serviços AWS
+
+---
+
+## 6. Teste A/B — Wix vs Novo Site (mesmo domínio)
+
+### Como Funciona
+
+O domínio `yorkshirecanilbrazil.com.br` fica no Wix. Criamos um subdomínio apontando para o novo site:
+
+| URL | Destino |
+|---|---|
+| `yorkshirecanilbrazil.com.br` | Site Wix (atual) |
+| `novo.yorkshirecanilbrazil.com.br` | Novo site (Cloudflare Pages) |
+
+### Configuração no Wix
+
+1. No painel Wix → Domínios → DNS
+2. Adicionar registro CNAME:
+   - Nome: `novo`
+   - Valor: URL do Cloudflare Pages (ex: `yorkshire-canil-brazil.pages.dev`)
+3. Aguardar propagação DNS (até 48h)
+
+### Links de Acesso
+
+- **Site atual:** `https://www.yorkshirecanilbrazil.com.br`
+- **Novo site:** `https://novo.yorkshirecanilbrazil.com.br`
+
+### Como Testar (via agência de marketing)
+
+A agência roda 2 campanhas idênticas no Meta Ads:
+- **Campanha A** → destino: `www.yorkshirecanilbrazil.com.br` (Wix)
+- **Campanha B** → destino: `novo.yorkshirecanilbrazil.com.br` (novo)
+- Mesmo público, mesmo orçamento, mesmo criativo
+- Duração: 30 dias
+
+### O que Medir
+
+| Métrica | Ferramenta | Meta |
+|---|---|---|
+| Leads gerados | GA4 + Meta Pixel | Qual gera mais |
+| Tempo na página | GA4 | Maior = melhor |
+| Taxa de rejeição | GA4 | Menor = melhor |
+| Cliques no WhatsApp | Meta Pixel (evento Lead) | Qual converte mais |
+| Custo por lead | Meta Ads | Menor = melhor |
+| Velocidade de carga | PageSpeed | Nota mais alta |
+
+### Pré-requisitos
+
+- [ ] Google Analytics (GA4) instalado nos dois sites (mesmo property, views separadas)
+- [ ] Meta Pixel instalado nos dois sites
+- [ ] Subdomínio `novo` configurado no DNS do Wix
+- [ ] Novo site deployado no Cloudflare Pages com custom domain
+- [ ] Agência ciente do teste e com os dois links
+
+### Resultado Esperado
+
+Após 30 dias:
+- Se novo site performa melhor → migra domínio principal para ele
+- Se Wix performa melhor → ajustamos o novo site com base nos dados
+- Se empate → mantém novo site (mais barato, sem mensalidade Wix)
+
+### Custo do Teste
+
+| Item | Custo |
+|---|---|
+| Cloudflare Pages | Grátis |
+| Subdomínio | Grátis (já tem o domínio) |
+| GA4 | Grátis |
+| Meta Pixel | Grátis |
+| Ads para teste | Orçamento da agência (já existente) |
+| **Total adicional** | **R$ 0** |
+
+### Após o Teste (decisão)
+
+**Se novo site vence:**
+1. Apontar `www.yorkshirecanilbrazil.com.br` para Cloudflare Pages
+2. Wix vira redirect ou desativa quando contrato vencer
+3. Economia da mensalidade Wix
+
+**Se Wix vence:**
+1. Analisar o que o Wix tem que o novo não tem
+2. Implementar melhorias no novo site
+3. Rodar novo teste em 30 dias
