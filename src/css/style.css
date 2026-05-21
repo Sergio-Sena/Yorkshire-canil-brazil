@@ -588,6 +588,14 @@ h3 {
   text-align: center;
 }
 
+#titulos-videos-grid {
+  margin-bottom: var(--spacing-md);
+}
+
+#titulos-videos-grid .carousel-track {
+  justify-content: center;
+}
+
 .titulos-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -764,10 +772,38 @@ h3 {
   text-align: center;
 }
 
+.ver-mais {
+  margin-top: var(--spacing-md);
+}
+
+.ver-mais a {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.btn-ver-todos {
+  margin-top: var(--spacing-md);
+  padding: 0.7rem 1.5rem;
+  background: transparent;
+  color: var(--color-accent);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+
+.btn-ver-todos:hover {
+  background: var(--color-accent);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
 /* ===== CAROUSEL ===== */
 .carousel {
   position: relative;
-  padding: 0 1.5rem;
+  padding: 0 1.75rem;
 }
 
 .carousel-track {
@@ -823,7 +859,7 @@ h3 {
 
 @media (width >= 768px) {
   .carousel {
-    padding: 0 2rem;
+    padding: 0 2.25rem;
   }
 
   .carousel-track {
