@@ -1,22 +1,38 @@
 {
   "filhotes": [],
+  "titulosVideos": [
+    { "src": "videos/promocionais/promocional-institucional.mp4" },
+    { "src": "videos/promocionais/promocional-01.mp4" }
+  ],
   "famosos": [
-    { "src": "videos/famoso-celso-01.mp4" },
-    { "src": "videos/famoso-cristhian.mp4" },
-    { "src": "videos/famoso-tales.mp4" },
-    { "src": "videos/famoso-hulk.mp4" }
+    { "src": "videos/famosos/famoso-celso-russomano-01.mp4", "nome": "Celso Russomano" },
+    { "src": "videos/famosos/famoso-celso-russomano-02.mp4", "nome": "Celso Russomano" },
+    { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior" },
+    { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos" },
+    { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo" },
+    { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos" },
+    { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho" }
   ],
   "emocoes": [
-    { "src": "videos/emocoes-depoimento-01.mp4" },
-    { "src": "videos/emocoes-campeao.mp4" },
-    { "src": "videos/campanha/campanha-01.mp4" },
-    { "src": "videos/campanha/campanha-02.mp4" },
-    { "src": "videos/campanha/campanha-03.mp4" },
-    { "src": "videos/campanha/campanha-04.mp4" },
-    { "src": "videos/campanha/campanha-05.mp4" },
-    { "src": "videos/campanha/campanha-institucional-01.mp4" },
-    { "src": "videos/campanha/campanha-institucional-02.mp4" },
-    { "src": "videos/campanha/campanha-institucional-03.mp4" },
-    { "src": "videos/campanha/campanha-institucional-04.mp4" }
+    { "src": "videos/emocoes-reais/campanha-01.mp4" },
+    { "src": "videos/emocoes-reais/campanha-02.mp4" },
+    { "src": "videos/emocoes-reais/campanha-03.mp4" },
+    { "src": "videos/emocoes-reais/campanha-04.mp4" },
+    { "src": "videos/emocoes-reais/campanha-05.mp4" },
+    { "src": "videos/emocoes-reais/campanha-06.mp4" }
+  ],
+  "emocoesExtras": [
+    { "src": "videos/emocoes-reais/campanha-07.mp4" },
+    { "src": "videos/emocoes-reais/campanha-08.mp4" },
+    { "src": "videos/emocoes-reais/campanha-09.mp4" },
+    { "src": "videos/emocoes-reais/campanha-10.mp4" },
+    { "src": "videos/emocoes-reais/campanha-11.mp4" },
+    { "src": "videos/emocoes-reais/campanha-12.mp4" },
+    { "src": "videos/emocoes-reais/campanha-13.mp4" },
+    { "src": "videos/emocoes-reais/campanha-14.mp4" },
+    { "src": "videos/emocoes-reais/campanha-15.mp4" },
+    { "src": "videos/emocoes-reais/campanha-16.mp4" },
+    { "src": "videos/emocoes-reais/campanha-17.mp4" },
+    { "src": "videos/emocoes-reais/campanha-18.mp4" }
   ]
 }

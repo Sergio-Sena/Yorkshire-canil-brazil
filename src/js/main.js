@@ -89,9 +89,15 @@ async function loadMedia() {
     const filhotesGrid = document.getElementById("filhotes-grid");
     const famososGrid = document.getElementById("famosos-grid");
     const emocoesGrid = document.getElementById("emocoes-grid");
+    const titulosVideosGrid = document.getElementById("titulos-videos-grid");
 
     if (filhotesGrid && data.filhotes) {
       renderCarousel(filhotesGrid, data.filhotes, "filhote");
+    }
+
+    if (titulosVideosGrid && data.titulosVideos) {
+      renderCarousel(titulosVideosGrid, data.titulosVideos, "video");
+      lazyLoadVideos(titulosVideosGrid);
     }
 
     if (famososGrid && data.famosos) {
@@ -102,6 +108,18 @@ async function loadMedia() {
     if (emocoesGrid && data.emocoes) {
       renderCarousel(emocoesGrid, data.emocoes, "video");
       lazyLoadVideos(emocoesGrid);
+
+      const btnVerTodos = document.getElementById("btn-ver-todos-emocoes");
+      if (btnVerTodos && data.emocoesExtras) {
+        btnVerTodos.addEventListener("click", () => {
+          const track = emocoesGrid.querySelector(".carousel-track");
+          data.emocoesExtras.forEach(item => {
+            track.innerHTML += `<div class="video-item"><video controls preload="none" data-src="${item.src}"></video></div>`;
+          });
+          lazyLoadVideos(emocoesGrid);
+          btnVerTodos.remove();
+        });
+      }
     }
   } catch (e) {
     console.error("Erro ao carregar mídias:", e);
