@@ -16,12 +16,14 @@
   "emocoes": [
     { "src": "videos/emocoes-reais/campanha-01.mp4" },
     { "src": "videos/emocoes-reais/campanha-02.mp4" },
+    { "src": "videos/emocoes-reais/campanha-19.mp4" },
+    { "src": "videos/emocoes-reais/campanha-20.mp4" },
     { "src": "videos/emocoes-reais/campanha-03.mp4" },
-    { "src": "videos/emocoes-reais/campanha-04.mp4" },
-    { "src": "videos/emocoes-reais/campanha-05.mp4" },
-    { "src": "videos/emocoes-reais/campanha-06.mp4" }
+    { "src": "videos/emocoes-reais/campanha-04.mp4" }
   ],
   "emocoesExtras": [
+    { "src": "videos/emocoes-reais/campanha-05.mp4" },
+    { "src": "videos/emocoes-reais/campanha-06.mp4" },
     { "src": "videos/emocoes-reais/campanha-07.mp4" },
     { "src": "videos/emocoes-reais/campanha-08.mp4" },
     { "src": "videos/emocoes-reais/campanha-09.mp4" },

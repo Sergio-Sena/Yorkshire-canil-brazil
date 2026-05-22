@@ -144,7 +144,7 @@ function renderCarousel(container, items, type) {
       </div>`;
     } else {
       track.innerHTML += `<div class="video-item">
-        <video controls preload="none" data-src="${item.src}">
+        <video controls preload="metadata" data-src="${item.src}">
         </video>
       </div>`;
     }
@@ -197,7 +197,7 @@ function lazyLoadVideos(container) {
         const src = video.getAttribute("data-src");
         video.innerHTML = `<source src="${src}" type="video/mp4">`;
         video.removeAttribute("data-src");
-        video.preload = "metadata";
+        video.load();
         observer.unobserve(video);
       }
     });
