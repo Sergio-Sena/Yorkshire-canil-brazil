@@ -7,7 +7,7 @@
   "famosos": [
     { "src": "videos/famosos/famoso-celso-russomano-01.mp4", "nome": "Celso Russomano" },
     { "src": "videos/famosos/famoso-celso-russomano-02.mp4", "nome": "Celso Russomano" },
-    { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior" },
+    { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior", "poster": "images/poster-fabio-junior.webp" },
     { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos" },
     { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo" },
     { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos" },
