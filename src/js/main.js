@@ -143,8 +143,9 @@ function renderCarousel(container, items, type) {
         </div>
       </div>`;
     } else {
+      const posterAttr = item.poster ? ` poster="${item.poster}"` : "";
       track.innerHTML += `<div class="video-item">
-        <video controls preload="metadata" data-src="${item.src}">
+        <video controls preload="metadata" data-src="${item.src}"${posterAttr}>
         </video>
       </div>`;
     }
