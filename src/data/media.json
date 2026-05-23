@@ -11,7 +11,9 @@
     { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos" },
     { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo" },
     { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos" },
-    { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho" }
+    { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho" },
+    { "src": "videos/famosos/famoso-isacfarias.mp4", "nome": "Isac Farias" },
+    { "src": "videos/famosos/famoso-renatto-vencancio.mp4", "nome": "Renatto Vencancio" }
   ],
   "emocoes": [
     { "src": "videos/emocoes-reais/campanha-01.mp4" },
