@@ -122,8 +122,8 @@ details summary:focus-visible {
 
 /* ===== THEME TOGGLE ===== */
 .theme-toggle {
-  background: rgb(255 255 255 / 20%);
-  border: 1px solid rgb(255 255 255 / 30%);
+  background: rgb(0 0 0 / 8%);
+  border: 1px solid rgb(0 0 0 / 15%);
   border-radius: 50%;
   width: 36px;
   height: 36px;
@@ -133,13 +133,13 @@ details summary:focus-visible {
   justify-content: center;
   font-size: 1rem;
   line-height: 1;
-  color: #fff;
+  color: #111;
   transition: background var(--transition), border-color var(--transition);
   backdrop-filter: blur(4px);
 }
 
 .theme-toggle:hover {
-  background: rgb(255 255 255 / 30%);
+  background: rgb(0 0 0 / 15%);
 }
 
 .theme-toggle .icon-moon {
@@ -169,10 +169,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgb(15 23 42 / 80%);
+  background: rgb(255 255 255 / 95%);
   backdrop-filter: blur(12px) saturate(1.5);
   -webkit-backdrop-filter: blur(12px) saturate(1.5);
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  border-bottom: 1px solid rgb(0 0 0 / 8%);
   padding: 0.3rem 0.75rem;
   display: flex;
   align-items: center;
@@ -204,13 +204,13 @@ header nav {
 }
 
 .header-logo {
-  height: 150px !important;
+  height: 120px !important;
   width: auto !important;
   display: block;
   background: none !important;
   padding: 0 !important;
   border: none !important;
-  margin: -15px 0;
+  margin: -20px 0;
 }
 
 header .logo {
@@ -219,6 +219,7 @@ header .logo {
   background: none;
   line-height: 0;
   margin-right: auto;
+  overflow: hidden;
 }
 
 .mobile-theme-toggle {
@@ -248,22 +249,22 @@ header .logo {
 }
 
 .nav-links a {
-  color: var(--color-accent);
+  color: #111;
   font-size: 0.9rem;
   font-weight: 500;
   transition: color var(--transition);
 }
 
 .nav-links a:hover {
-  color: var(--color-accent-hover);
+  color: #555;
 }
 
 [data-theme="light"] .nav-links a {
-  color: #fff;
+  color: #111;
 }
 
 [data-theme="light"] .nav-links a:hover {
-  color: #fff;
+  color: #555;
 }
 
 .menu-toggle {
@@ -280,7 +281,7 @@ header .logo {
   display: block;
   width: 24px;
   height: 2px;
-  background: #fff;
+  background: #111;
   transition: transform var(--transition), opacity var(--transition);
 }
 
@@ -1364,7 +1365,7 @@ footer {
 
   .logo-img,
   .header-logo {
-    height: 80px;
+    height: 70px !important;
     margin: -15px 0;
   }
 
