@@ -1,42 +1,42 @@
 {
   "filhotes": [],
   "titulosVideos": [
-    { "src": "videos/promocionais/promocional-institucional.mp4" },
-    { "src": "videos/promocionais/promocional-01.mp4" }
+    { "src": "videos/promocionais/promocional-institucional.mp4", "poster": "images/posters/promocional-institucional.webp" },
+    { "src": "videos/promocionais/promocional-01.mp4", "poster": "images/posters/promocional-01.webp" }
   ],
   "famosos": [
-    { "src": "videos/famosos/famoso-celso-russomano-01.mp4", "nome": "Celso Russomano" },
-    { "src": "videos/famosos/famoso-celso-russomano-02.mp4", "nome": "Celso Russomano" },
-    { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior", "poster": "images/poster-fabio-junior.webp" },
-    { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos" },
-    { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo" },
-    { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos" },
-    { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho" },
-    { "src": "videos/famosos/famoso-isacfarias.mp4", "nome": "Isac Farias" },
-    { "src": "videos/famosos/famoso-renatto-vencancio.mp4", "nome": "Renatto Vencancio" }
+    { "src": "videos/famosos/famoso-celso-russomano-01.mp4", "nome": "Celso Russomano", "poster": "images/posters/famoso-celso-russomano-01.webp" },
+    { "src": "videos/famosos/famoso-celso-russomano-02.mp4", "nome": "Celso Russomano", "poster": "images/posters/famoso-celso-russomano-02.webp" },
+    { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior", "poster": "images/posters/famoso-fabio-junior.webp" },
+    { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos", "poster": "images/posters/famoso-fernanda-vasconcelos.webp" },
+    { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo", "poster": "images/posters/famoso-hulk-magrelo.webp" },
+    { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos", "poster": "images/posters/famoso-evandro-santos.webp" },
+    { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho", "poster": "images/posters/famoso-tales-coutinho.webp" },
+    { "src": "videos/famosos/famoso-isacfarias.mp4", "nome": "Isac Farias", "poster": "images/posters/famoso-isacfarias.webp" },
+    { "src": "videos/famosos/famoso-renatto-vencancio.mp4", "nome": "Renatto Vencancio", "poster": "images/posters/famoso-renatto-vencancio.webp" }
   ],
   "emocoes": [
-    { "src": "videos/emocoes-reais/campanha-01.mp4" },
-    { "src": "videos/emocoes-reais/campanha-02.mp4" },
-    { "src": "videos/emocoes-reais/campanha-19.mp4" },
-    { "src": "videos/emocoes-reais/campanha-20.mp4" },
-    { "src": "videos/emocoes-reais/campanha-03.mp4" },
-    { "src": "videos/emocoes-reais/campanha-04.mp4" }
+    { "src": "videos/emocoes-reais/campanha-01.mp4", "poster": "images/posters/campanha-01.webp" },
+    { "src": "videos/emocoes-reais/campanha-02.mp4", "poster": "images/posters/campanha-02.webp" },
+    { "src": "videos/emocoes-reais/campanha-19.mp4", "poster": "images/posters/campanha-19.webp" },
+    { "src": "videos/emocoes-reais/campanha-20.mp4", "poster": "images/posters/campanha-20.webp" },
+    { "src": "videos/emocoes-reais/campanha-03.mp4", "poster": "images/posters/campanha-03.webp" },
+    { "src": "videos/emocoes-reais/campanha-04.mp4", "poster": "images/posters/campanha-04.webp" }
   ],
   "emocoesExtras": [
-    { "src": "videos/emocoes-reais/campanha-05.mp4" },
-    { "src": "videos/emocoes-reais/campanha-06.mp4" },
-    { "src": "videos/emocoes-reais/campanha-07.mp4" },
-    { "src": "videos/emocoes-reais/campanha-08.mp4" },
-    { "src": "videos/emocoes-reais/campanha-09.mp4" },
-    { "src": "videos/emocoes-reais/campanha-10.mp4" },
-    { "src": "videos/emocoes-reais/campanha-11.mp4" },
-    { "src": "videos/emocoes-reais/campanha-12.mp4" },
-    { "src": "videos/emocoes-reais/campanha-13.mp4" },
-    { "src": "videos/emocoes-reais/campanha-14.mp4" },
-    { "src": "videos/emocoes-reais/campanha-15.mp4" },
-    { "src": "videos/emocoes-reais/campanha-16.mp4" },
-    { "src": "videos/emocoes-reais/campanha-17.mp4" },
-    { "src": "videos/emocoes-reais/campanha-18.mp4" }
+    { "src": "videos/emocoes-reais/campanha-05.mp4", "poster": "images/posters/campanha-05.webp" },
+    { "src": "videos/emocoes-reais/campanha-06.mp4", "poster": "images/posters/campanha-06.webp" },
+    { "src": "videos/emocoes-reais/campanha-07.mp4", "poster": "images/posters/campanha-07.webp" },
+    { "src": "videos/emocoes-reais/campanha-08.mp4", "poster": "images/posters/campanha-08.webp" },
+    { "src": "videos/emocoes-reais/campanha-09.mp4", "poster": "images/posters/campanha-09.webp" },
+    { "src": "videos/emocoes-reais/campanha-10.mp4", "poster": "images/posters/campanha-10.webp" },
+    { "src": "videos/emocoes-reais/campanha-11.mp4", "poster": "images/posters/campanha-11.webp" },
+    { "src": "videos/emocoes-reais/campanha-12.mp4", "poster": "images/posters/campanha-12.webp" },
+    { "src": "videos/emocoes-reais/campanha-13.mp4", "poster": "images/posters/campanha-13.webp" },
+    { "src": "videos/emocoes-reais/campanha-14.mp4", "poster": "images/posters/campanha-14.webp" },
+    { "src": "videos/emocoes-reais/campanha-15.mp4", "poster": "images/posters/campanha-15.webp" },
+    { "src": "videos/emocoes-reais/campanha-16.mp4", "poster": "images/posters/campanha-16.webp" },
+    { "src": "videos/emocoes-reais/campanha-17.mp4", "poster": "images/posters/campanha-17.webp" },
+    { "src": "videos/emocoes-reais/campanha-18.mp4", "poster": "images/posters/campanha-18.webp" }
   ]
 }

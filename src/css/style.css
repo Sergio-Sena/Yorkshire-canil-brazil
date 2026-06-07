@@ -204,13 +204,13 @@ header nav {
 }
 
 .header-logo {
-  height: 120px !important;
+  height: 85px !important;
   width: auto !important;
   display: block;
   background: none !important;
   padding: 0 !important;
   border: none !important;
-  margin: -20px 0;
+  margin: 0;
 }
 
 header .logo {
@@ -219,7 +219,6 @@ header .logo {
   background: none;
   line-height: 0;
   margin-right: auto;
-  overflow: hidden;
 }
 
 .mobile-theme-toggle {
@@ -1365,8 +1364,8 @@ footer {
 
   .logo-img,
   .header-logo {
-    height: 70px !important;
-    margin: -15px 0;
+    height: 60px !important;
+    margin: 0;
   }
 
   .filhotes-cta {
@@ -1392,15 +1391,6 @@ footer {
   }
 }
 
-/* Mobile médio (481px - 767px) */
-@media (width >= 481px) and (width <= 767px) {
-  .filhotes-cta {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
-}
-
 
 /* Mobile nav (< 768px) */
 @media (width <= 767px) {
@@ -1412,6 +1402,34 @@ footer {
   .carousel-track .video-item {
     width: 100%;
     min-width: 100%;
+  }
+
+  #filhotes h2,
+  #faq h2 {
+    text-align: center;
+  }
+
+  .filhotes-info {
+    text-align: center;
+  }
+
+  .badge-urgencia {
+    display: block;
+    text-align: center;
+  }
+
+  .filhotes-cta {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  #faq {
+    text-align: center;
+  }
+
+  #faq details {
+    text-align: left;
   }
 }
 
@@ -1436,13 +1454,13 @@ footer {
     left: 0;
     right: 0;
     flex-direction: column;
-    background: rgb(15 23 42 / 95%);
+    background: rgb(255 255 255 / 98%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgb(255 255 255 / 8%);
+    border-bottom: 1px solid rgb(0 0 0 / 8%);
     padding: var(--spacing-sm) var(--spacing-md);
     gap: 0;
-    box-shadow: 0 4px 24px rgb(0 0 0 / 20%);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 10%);
   }
 
   .nav-links.active {
@@ -1455,7 +1473,7 @@ footer {
 
   .nav-links li {
     padding: var(--spacing-sm) 0;
-    border-bottom: 1px solid rgb(255 255 255 / 10%);
+    border-bottom: 1px solid rgb(0 0 0 / 8%);
   }
 
   .nav-links li:last-child {
