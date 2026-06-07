@@ -1,42 +1,7 @@
 "use strict";
 
-// Theme toggle
-const themeBtn = document.querySelector(".theme-toggle");
-const stored = localStorage.getItem("theme");
-
-if (stored) {
-  document.documentElement.setAttribute("data-theme", stored);
-} else {
-  document.documentElement.setAttribute("data-theme", "light");
-}
-
-if (themeBtn) {
-  themeBtn.addEventListener("click", () => {
-    const current = document.documentElement.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("theme", next);
-    updateMobileThemeBtn(next);
-  });
-}
-
-const themeBtnMobile = document.querySelector(".theme-toggle-mobile");
-function updateMobileThemeBtn(theme) {
-  if (themeBtnMobile) {
-    themeBtnMobile.innerHTML = theme === "dark" ? "\u2600 Tema claro" : "\u263D Tema escuro";
-  }
-}
-updateMobileThemeBtn(document.documentElement.getAttribute("data-theme"));
-
-if (themeBtnMobile) {
-  themeBtnMobile.addEventListener("click", () => {
-    const current = document.documentElement.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("theme", next);
-    updateMobileThemeBtn(next);
-  });
-}
+// Force light theme
+document.documentElement.setAttribute("data-theme", "light");
 
 // Mobile menu
 const toggle = document.querySelector(".menu-toggle");

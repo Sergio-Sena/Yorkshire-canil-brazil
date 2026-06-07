@@ -3,17 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="icon"
-      href="images/favicon.png"
-      type="image/png"
-    />
+    <link rel="icon" href="images/favicon.png" type="image/png" />
     <meta name="theme-color" content="#0f172a" />
     <script>
-      document.documentElement.setAttribute(
-        "data-theme",
-        localStorage.getItem("theme") || "light",
-      );
+      document.documentElement.setAttribute("data-theme", "light");
     </script>
     <meta
       name="description"
@@ -181,9 +174,14 @@
       }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
+    />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -202,16 +200,7 @@
           <li><a href="#diferenciais">Diferenciais</a></li>
           <li><a href="blog/" aria-label="Blog">Blog</a></li>
           <li><a href="#contato">Contato</a></li>
-          <li class="mobile-theme-toggle"><button class="theme-toggle-mobile" aria-label="Alternar tema">&#9790; Tema escuro</button></li>
         </ul>
-        <button
-          class="theme-toggle"
-          aria-label="Alternar tema escuro"
-          title="Alternar tema"
-        >
-          <span class="icon-sun">☀</span>
-          <span class="icon-moon">☽</span>
-        </button>
         <button
           class="menu-toggle"
           aria-label="Abrir menu"
@@ -225,8 +214,19 @@
     <main>
       <section id="inicio" aria-label="Apresentação">
         <picture>
-          <source srcset="images/hero-banner-mobile.webp" media="(max-width: 767px)">
-          <img src="images/hero-banner.webp" alt="Yorkshire Canil Brazil - Excelência em Yorkshire Terrier" class="hero-banner" loading="eager" fetchpriority="high" width="1610" height="977" />
+          <source
+            srcset="images/hero-banner-mobile.webp"
+            media="(max-width: 767px)"
+          />
+          <img
+            src="images/hero-banner.webp"
+            alt="Yorkshire Canil Brazil - Excelência em Yorkshire Terrier"
+            class="hero-banner"
+            loading="eager"
+            fetchpriority="high"
+            width="1610"
+            height="977"
+          />
         </picture>
       </section>
 
@@ -279,7 +279,9 @@
         <h2>Emoções Reais</h2>
         <p class="section-subtitle">Famílias que confiaram em nós.</p>
         <div id="emocoes-grid"></div>
-        <button class="btn-ver-todos" id="btn-ver-todos-emocoes">Ver todos (+14 vídeos)</button>
+        <button class="btn-ver-todos" id="btn-ver-todos-emocoes">
+          Ver todos (+14 vídeos)
+        </button>
       </section>
 
       <section id="filhotes" aria-label="Filhotes disponíveis">
@@ -295,19 +297,36 @@
         </div>
         <div id="filhotes-grid"></div>
         <div class="filhotes-cta">
-          <a href="https://wa.me/5511977118201" target="_blank" rel="noopener" class="btn-primary">🐾 Quero Meu Filhote</a>
+          <a
+            href="https://wa.me/5511977118201"
+            target="_blank"
+            rel="noopener"
+            class="btn-primary"
+            >🐾 Quero Meu Filhote</a
+          >
           <a href="#diferenciais" class="btn-outline">Sobre o Canil →</a>
         </div>
       </section>
-
 
       <section id="sobre" aria-label="Sobre o canil">
         <h2>Sobre o Yorkshire Canil Brazil</h2>
         <div class="sobre-content">
           <div class="sobre-texto">
-            <p>Há mais de 10 anos, o <strong>Yorkshire Canil Brazil</strong> se dedica à criação responsável, ética e amorosa dos mais lindos Yorkshire Terriers do Brasil.</p>
-            <p>Com títulos nacionais e sul-americanos, somos o canil dos artistas e referência em toda a América Latina. Cuidamos de cada filhote como se fosse único, com carinho, saúde e estrutura de alto padrão.</p>
-            <p>Tradição, ética e paixão pela raça que conquistou o mundo. <em>Desde 2014.</em></p>
+            <p>
+              Há mais de 10 anos, o <strong>Yorkshire Canil Brazil</strong> se
+              dedica à criação responsável, ética e amorosa dos mais lindos
+              Yorkshire Terriers do Brasil.
+            </p>
+            <p>
+              Com títulos nacionais e sul-americanos, somos o canil dos artistas
+              e referência em toda a América Latina. Cuidamos de cada filhote
+              como se fosse único, com carinho, saúde e estrutura de alto
+              padrão.
+            </p>
+            <p>
+              Tradição, ética e paixão pela raça que conquistou o mundo.
+              <em>Desde 2014.</em>
+            </p>
           </div>
         </div>
       </section>
@@ -373,7 +392,7 @@
         <h2>Quer Ser Avisado Sobre Novos Filhotes?</h2>
         <p>
           Deixe seu contato e avisamos quando houver filhotes disponíveis. Sem
-          compromisso — queremos encontrar a família certa para cada filhote.
+          compromisso, queremos encontrar a família certa para cada filhote.
         </p>
         <form class="form-captura" id="form-lead">
           <input
