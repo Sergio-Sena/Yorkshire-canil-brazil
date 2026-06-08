@@ -4,27 +4,17 @@
   "description": "Filhotes de Yorkshire Terrier com pedigree, linhagem campeã e entrega para todo o Brasil. Desde 2010.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#f8fafc",
+  "theme_color": "#059669",
   "orientation": "portrait-primary",
   "lang": "pt-BR",
   "categories": ["business", "lifestyle"],
   "icons": [
     {
-      "src": "images/e9762d_8b6bed4dcbc94d0c927977c8fc01122d~mv2.avif",
-      "sizes": "any",
-      "type": "image/avif",
-      "purpose": "any"
-    },
-    {
-      "src": "images/icon-192.png",
+      "src": "images/favicon.png",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

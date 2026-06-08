@@ -1,8 +1,5 @@
 "use strict";
 
-// Force light theme
-document.documentElement.setAttribute("data-theme", "light");
-
 // Mobile menu
 const toggle = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".nav-links");
@@ -70,14 +67,10 @@ async function loadMedia() {
     const res = await fetch("data/media.json");
     const data = await res.json();
 
-    const filhotesGrid = document.getElementById("filhotes-grid");
     const famososGrid = document.getElementById("famosos-grid");
     const emocoesGrid = document.getElementById("emocoes-grid");
     const titulosVideosGrid = document.getElementById("titulos-videos-grid");
 
-    if (filhotesGrid && data.filhotes) {
-      renderCarousel(filhotesGrid, data.filhotes, "filhote");
-    }
 
     if (titulosVideosGrid && data.titulosVideos) {
       renderCarousel(titulosVideosGrid, data.titulosVideos, "video");
