@@ -122,10 +122,10 @@
 ```
 
 ### 3.2 Google Tag Manager (GTM)
-- [ ] Criar container GTM em https://tagmanager.google.com/
-- [ ] Obter ID (GTM-XXXXXXX)
-- [ ] Descomentar o bloco GTM no `<head>` e `<body>` do `index.html`
-- [ ] Substituir `GTM-XXXXXXX` pelo ID real
+- [x] Criar container GTM em https://tagmanager.google.com/
+- [x] Obter ID (`GTM-PTLTVTHG`)
+- [x] Inserir bloco GTM no `<head>` e `<body>` do `index.html`
+- [x] ID real configurado: `GTM-PTLTVTHG` (atualizado a pedido da agência)
 - [ ] Configurar triggers para:
   - Clique no WhatsApp
   - Envio do formulário de leads
