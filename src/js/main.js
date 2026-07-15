@@ -183,3 +183,22 @@ function lazyLoadVideos(container) {
 
   videos.forEach((video) => observer.observe(video));
 }
+
+// WhatsApp UTM tracking — identifica origem do lead
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const utmSource = params.get("utm_source");
+  const utmMedium = params.get("utm_medium");
+  const gclid = params.get("gclid");
+  const isPago = gclid || (utmSource === "google" && utmMedium === "cpc");
+
+  const msg = isPago
+    ? "Olá! Vi vocês no Google e tenho interesse em um filhote de Yorkshire."
+    : "Olá! Encontrei vocês pelo site e tenho interesse em um filhote de Yorkshire.";
+
+  document.querySelectorAll('a[href*="wa.me/5511977118201"]').forEach((link) => {
+    if (!link.closest("#form-lead")) {
+      link.href = `https://wa.me/5511977118201?text=${encodeURIComponent(msg)}`;
+    }
+  });
+})();
