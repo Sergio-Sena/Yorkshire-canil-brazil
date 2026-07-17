@@ -115,3 +115,4 @@
 | `guia-google-ads.md` | Guia das campanhas |
 | `historico-campanhas.md` | Histórico de decisões |
 | `Infra.md` | Infraestrutura AWS |
+| `saas-chatbot-visao.md` | Visão de produto SaaS multi-cliente |
