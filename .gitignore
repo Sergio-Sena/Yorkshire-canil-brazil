@@ -2,3 +2,8 @@ node_modules/
 dist/
 lighthouse-report.json
 *.log
+.env
+__pycache__/
+*.pyc
+.coverage
+.pytest_cache/
