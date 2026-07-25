@@ -173,7 +173,7 @@ def _call_bedrock(system: str, messages: list) -> str:
     """Chama Claude com guardrails. Retorna texto bruto da resposta."""
     kwargs = {
         "modelId":    BEDROCK_MODEL_ID,
-        "system":     [{"text": system}],
+        "system":     [{"text": system}, {"cachePoint": {"type": "default"}}],
         "messages":   messages,
         "inferenceConfig": {
             "maxTokens":   1024,
@@ -190,7 +190,12 @@ def _call_bedrock(system: str, messages: list) -> str:
 
     resp  = _bedrock.converse(**kwargs)
     usage = resp.get("usage", {})
-    logger.info(f"Bedrock tokens — input:{usage.get('inputTokens',0)} output:{usage.get('outputTokens',0)}")
+    logger.info(
+        f"Bedrock tokens — input:{usage.get('inputTokens',0)} "
+        f"output:{usage.get('outputTokens',0)} "
+        f"cacheRead:{usage.get('cacheReadInputTokens',0)} "
+        f"cacheWrite:{usage.get('cacheWriteInputTokens',0)}"
+    )
 
     # Verifica se guardrail bloqueou
     stop_reason = resp.get("stopReason", "")
