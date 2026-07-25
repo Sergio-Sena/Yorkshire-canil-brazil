@@ -27,6 +27,7 @@ def lambda_handler(event, context):
     if method == "POST":
         signature = event.get("headers", {}).get("x-hub-signature-256", "")
         if not validate_signature(event.get("body", ""), signature):
+            logger.warning(f"HMAC falhou — signature recebida: {signature[:30] if signature else 'AUSENTE'}")
             return {"statusCode": 403, "body": "Forbidden"}
 
         return _enqueue(event)

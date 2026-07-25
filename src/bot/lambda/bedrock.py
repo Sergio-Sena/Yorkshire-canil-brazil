@@ -178,7 +178,6 @@ def _call_bedrock(system: str, messages: list) -> str:
         "inferenceConfig": {
             "maxTokens":   1024,
             "temperature": 0.7,
-            "topP":        0.9,
         }
     }
 
@@ -260,7 +259,8 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
         response = _parse_response(raw)
     except ClientError as e:
         code = e.response["Error"]["Code"]
-        logger.error(f"Bedrock ClientError: {code}")
+        msg  = e.response["Error"].get("Message", "")
+        logger.error(f"Bedrock ClientError: {code} — {msg}")
 
         # Fallback nível 2 — resposta genérica
         if code in ("ThrottlingException", "ServiceUnavailableException"):
