@@ -253,8 +253,13 @@ Resources:
       Subscription:
         - Protocol: email
           Endpoint: !Ref SergioEmail
-        - Protocol: lambda
-          Endpoint: !GetAtt NotifierFunction.Arn
+
+  NotifierSNSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref TechAlertTopic
+      Protocol: lambda
+      Endpoint: !GetAtt NotifierFunction.Arn
 
   # ── CloudWatch Alarm — DLQ com mensagem = problema crítico ───────────────
   DLQAlarm:

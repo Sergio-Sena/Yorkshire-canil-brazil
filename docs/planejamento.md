@@ -79,3 +79,42 @@ Para dar continuidade ao projeto, os seguintes passos são recomendados:
 
 **Autor:** Manus AI
 **Data:** 18 de maio de 2026
+
+---
+
+## 7. Bot IA WhatsApp — Roadmap de Sprints
+
+### Sprint 1 — Lógica de Negócio ✅ Concluído
+- Lambda Webhook, Processor, Morning Dispatcher, Notifier
+- Bedrock Claude Sonnet 4.5 + Guardrails + anti-injection
+- DynamoDB tabela única + TTL LGPD 90 dias
+- Horário noturno 23h30–8h + pending_transfer
+- 53 testes automatizados (moto + freezegun)
+
+### Sprint 2 — Deploy AWS (em andamento)
+- SAM template.yaml → CloudFormation
+- API Gateway + Lambda + SQS FIFO + DynamoDB + SNS
+- Configuração webhook Meta for Developers
+- Token permanente via System User (business.facebook.com)
+- Testes end-to-end com número real
+
+### Sprint 3 — RAG + Painel de Controle
+- [ ] **Tags AWS** em todos os recursos (`projeto=yorkshire-bot`, `env=prod`, `cliente=yorkshire-canil-brazil`)
+- [ ] **AWS Cost Explorer** com filtro por tag — custo real do bot por mês
+- [ ] **Painel web** com valor convertido em tempo real:
+  - Leads fechados × ticket médio = receita gerada pelo bot
+  - Botão de atualização manual + refresh automático a cada chamada Bedrock
+  - Integração DynamoDB → puxa `status=fechado` para calcular conversão real
+- [ ] **RAG com Bedrock Knowledge Base**:
+  - S3 com conversas rotuladas, objeções respondidas, filhotes disponíveis
+  - Knowledge Base sincronizada automaticamente
+  - Bot consulta base antes de responder → respostas mais precisas
+- [ ] **Amazon Transcribe** — processar áudios OGG/Opus do WhatsApp
+- [ ] **Amazon Comprehend** — análise de sentimento pré-Bedrock
+- [ ] **EventBridge Scheduler** — follow-ups D+1 e D+30
+- [ ] **CloudWatch Dashboard** — painel visual de métricas operacionais
+
+### Sprint 4 — Otimização e Escala
+- [ ] Fine-tuning com dataset de ~100 conversas rotuladas
+- [ ] Teste A/B de prompts
+- [ ] Multi-tenant (outros canils como clientes da SS Technologies)
