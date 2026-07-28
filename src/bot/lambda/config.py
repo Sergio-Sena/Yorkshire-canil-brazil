@@ -111,9 +111,24 @@ RESERVATION_DEPOSIT_PCT = 0.30
 
 FRETE_INCLUSO = True
 
+# Localização declarada ao cliente para dissuadir retirada (não afeta preço)
 LOCATION_BY_CLIENT = {
     "SP": "Minas Gerais",
     "default": "São Paulo"
+}
+
+# Faixa de preço por estado do cliente (canil fica em SP)
+PRICE_TIER_BY_STATE = {
+    "SP": "capital_100km",
+    "MG": "acima_100km",
+    "RJ": "acima_100km",
+    "PR": "acima_100km",
+    "SC": "acima_100km",
+    "RS": "acima_100km",
+    "MS": "acima_100km",
+    "GO": "acima_100km",
+    "MT": "acima_100km",
+    "default": "outros_estados"
 }
 
 INCLUDED_ITEMS = [

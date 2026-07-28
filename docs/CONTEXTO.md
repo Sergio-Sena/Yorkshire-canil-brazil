@@ -33,14 +33,28 @@
 - Painel: `https://sstrafegopago.sstechnologies-cloud.com/painel-gestor.html`
 - Token renovação: `npm run renew:token` no projeto SS-Gestao-de-Trafego
 
-### 2. Bot de Atendimento WhatsApp (em desenvolvimento)
-- **Status**: Contrato sendo fechado no sábado
+### 2. Bot de Atendimento WhatsApp ✅ Sprint 2 concluído
+- **Status**: End-to-end validado com número real (`9176`)
 - **Objetivo**: Substituir bot engessado (R$200/mês, opções 1/2/3) por bot com IA
 - **Infraestrutura**: AWS (roda em nuvem — não trava celular)
-- **Número**: Sergio usa número temporário para dev → após aprovação migra para número do Thiago
+- **Número bot**: `9176` — Phone Number ID `1219655164565164` (produção)
+- **Número testes**: `9596` (Sergio)
+- **Guardrail**: `l2sg39cfds01` versão 5 — tópicos: política, religião, concorrentes
+- **Preços**: por estado do cliente (`PRICE_TIER_BY_STATE`) — SP: R$3.949/R$4.949
+- **Localização declarada**: SP → "Minas Gerais", outros → "São Paulo" (dissuadir retirada)
 - **Acesso**: Painel web para Thiago acompanhar conversas e intervir manualmente
 - **Notificações**: Bot avisa Thiago quando precisar de intervenção humana
 - **Docs**: `docs/IA DE ATENDIMENTO - WATTSUP.md`, `docs/chatbot-ia-arquitetura.md`, `docs/proposta-chatbot-ia-cliente.md`
+
+#### 🔧 Variáveis Lambda (`yorkshire-bot-processor-dev`)
+| Variável | Valor |
+|----------|-------|
+| `WHATSAPP_PHONE_ID` | `1219655164565164` |
+| `GUARDRAIL_ID` | `l2sg39cfds01` |
+| `GUARDRAIL_VERSION` | `5` |
+| `DYNAMODB_TABLE` | `yorkshire-bot-conversations-dev` |
+| `THIAGO_PHONE` | `5511977119176` |
+| `BEDROCK_MODEL_ID` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
 
 ---
 

@@ -91,12 +91,21 @@ Para dar continuidade ao projeto, os seguintes passos são recomendados:
 - Horário noturno 23h30–8h + pending_transfer
 - 53 testes automatizados (moto + freezegun)
 
-### Sprint 2 — Deploy AWS (em andamento)
+### Sprint 2 — Deploy AWS ✅ Concluído
 - SAM template.yaml → CloudFormation
 - API Gateway + Lambda + SQS FIFO + DynamoDB + SNS
 - Configuração webhook Meta for Developers
-- Token permanente via System User (business.facebook.com)
-- Testes end-to-end com número real
+- Token permanente via System User (business.facebook.com) — sem expiração
+- `WHATSAPP_PHONE_ID` corrigido para número de produção `9176` (ID: `1219655164565164`)
+- Guardrail v5 (`l2sg39cfds01`) — tópico `concorrentes` refinado, falso positivo corrigido
+- Preços corrigidos por estado do cliente (`PRICE_TIER_BY_STATE`) — SP usa `capital_100km`
+- Localização declarada separada do preço — SP vê "Minas Gerais", outros estados veem "São Paulo"
+- Bug `outputAssessments` corrigido no `bedrock.py` (dict por ID, não lista)
+- Testes end-to-end validados: saudação → nome/cidade → preferência → preço → reserva
+
+### Sprint 2.1 — Radar (próximas melhorias)
+- [ ] **Áudio WhatsApp** — Claude Sonnet 4.5 aceita áudio nativo via Bedrock (zero Transcribe/S3)
+- [ ] Testar cenários: objeção de preço, parcelamento, PIX, transfer para Thiago, modo noturno, injection, guardrail
 
 ### Sprint 3 — RAG + Painel de Controle
 - [ ] **Tags AWS** em todos os recursos (`projeto=yorkshire-bot`, `env=prod`, `cliente=yorkshire-canil-brazil`)
