@@ -1,0 +1,343 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "Yorkshire Canil Brazil \u2014 Bot IA WhatsApp (API Gateway + Lambda\
+  \ + SQS + DynamoDB + SNS)"
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+    - dev
+    - prod
+  WhatsappToken:
+    Type: String
+    NoEcho: true
+  WhatsappPhoneId:
+    Type: String
+  WhatsappAppSecret:
+    Type: String
+    NoEcho: true
+  WebhookVerifyToken:
+    Type: String
+    NoEcho: true
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-sonnet-4-5
+  GuardrailId:
+    Type: String
+    Default: ''
+  GuardrailVersion:
+    Type: String
+    Default: DRAFT
+  ThiagoPhone:
+    Type: String
+    Description: "WhatsApp do Thiago para notifica\xE7\xF5es de lead (ex 5511977118201)"
+  SergioEmail:
+    Type: String
+    Description: "E-mail do Sergio para alertas t\xE9cnicos (backup passivo)"
+  SergioPhone:
+    Type: String
+    Description: "WhatsApp do Sergio para alertas t\xE9cnicos ativos (ex 5511999999999)"
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures:
+    - arm64
+    MemorySize: 256
+    Layers:
+    - Ref: DependenciesLayer
+    Environment:
+      Variables:
+        AWS_REGION_NAME:
+          Ref: AWS::Region
+        ENVIRONMENT:
+          Ref: Environment
+        DYNAMODB_TABLE:
+          Ref: ConversationsTable
+        TECH_SNS_TOPIC_ARN:
+          Ref: TechAlertTopic
+        SQS_QUEUE_URL:
+          Ref: MessageQueue
+        BEDROCK_MODEL_ID:
+          Ref: BedrockModelId
+        GUARDRAIL_ID:
+          Ref: GuardrailId
+        GUARDRAIL_VERSION:
+          Ref: GuardrailVersion
+        WHATSAPP_TOKEN:
+          Ref: WhatsappToken
+        WHATSAPP_PHONE_ID:
+          Ref: WhatsappPhoneId
+        WHATSAPP_APP_SECRET:
+          Ref: WhatsappAppSecret
+        WEBHOOK_VERIFY_TOKEN:
+          Ref: WebhookVerifyToken
+        THIAGO_PHONE:
+          Ref: ThiagoPhone
+        SERGIO_PHONE:
+          Ref: SergioPhone
+Resources:
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName:
+        Fn::Sub: yorkshire-bot-deps-${Environment}
+      ContentUri: DependenciesLayer
+      CompatibleRuntimes:
+      - python3.12
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: python3.12
+      SamResourceId: DependenciesLayer
+  WebhookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: yorkshire-bot-webhook-${Environment}
+      CodeUri: WebhookFunction
+      Handler: handler.lambda_handler
+      Timeout: 10
+      Description: Valida assinatura Meta e enfileira no SQS
+      Policies:
+      - SQSSendMessagePolicy:
+          QueueName:
+            Fn::GetAtt:
+            - MessageQueue
+            - QueueName
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ConversationsTable
+      Events:
+        WebhookGet:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: WebhookApi
+            Method: GET
+            Path: /webhook
+        WebhookPost:
+          Type: HttpApi
+          Properties:
+            ApiId:
+              Ref: WebhookApi
+            Method: POST
+            Path: /webhook
+    Metadata:
+      SamResourceId: WebhookFunction
+  ProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: yorkshire-bot-processor-${Environment}
+      CodeUri: ProcessorFunction
+      Handler: processor.lambda_handler
+      Timeout: 60
+      Description: "Processa mensagens do SQS \u2014 Bedrock + DynamoDB + WhatsApp"
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ConversationsTable
+      - Statement:
+        - Effect: Allow
+          Action:
+          - bedrock:InvokeModel
+          - bedrock:InvokeModelWithResponseStream
+          - bedrock:ApplyGuardrail
+          Resource: '*'
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue:
+              Fn::GetAtt:
+              - MessageQueue
+              - Arn
+            BatchSize: 1
+            FunctionResponseTypes:
+            - ReportBatchItemFailures
+    Metadata:
+      SamResourceId: ProcessorFunction
+  MorningDispatcherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: yorkshire-bot-morning-dispatcher-${Environment}
+      CodeUri: MorningDispatcherFunction
+      Handler: morning_dispatcher.lambda_handler
+      Timeout: 30
+      Description: "Dispara \xE0s 8h BRT notificando Thiago sobre leads quentes da\
+        \ madrugada"
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ConversationsTable
+      Events:
+        MorningSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 11 * * ? *)
+            Description: "Dispara todo dia \xE0s 8h (America/Sao_Paulo)"
+            Enabled: true
+    Metadata:
+      SamResourceId: MorningDispatcherFunction
+  NotifierFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: yorkshire-bot-notifier-${Environment}
+      CodeUri: NotifierFunction
+      Handler: notifier.lambda_handler
+      Timeout: 15
+      Description: Recebe alarmes CloudWatch via SNS e avisa Sergio no WhatsApp
+    Metadata:
+      SamResourceId: NotifierFunction
+  NotifierSNSPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName:
+        Ref: NotifierFunction
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: TechAlertTopic
+  WebhookApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name:
+        Fn::Sub: yorkshire-bot-api-${Environment}
+      StageName:
+        Ref: Environment
+      Description: Webhook Meta WhatsApp Business API
+  MessageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName:
+        Fn::Sub: yorkshire-bot-messages-${Environment}.fifo
+      FifoQueue: true
+      ContentBasedDeduplication: false
+      VisibilityTimeout: 90
+      MessageRetentionPeriod: 3600
+      RedrivePolicy:
+        deadLetterTargetArn:
+          Fn::GetAtt:
+          - DeadLetterQueue
+          - Arn
+        maxReceiveCount: 3
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName:
+        Fn::Sub: yorkshire-bot-dlq-${Environment}.fifo
+      FifoQueue: true
+      MessageRetentionPeriod: 86400
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: yorkshire-bot-conversations-${Environment}
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      AttributeDefinitions:
+      - AttributeName: phone
+        AttributeType: S
+      - AttributeName: record_type
+        AttributeType: S
+      - AttributeName: followup_ts
+        AttributeType: N
+      KeySchema:
+      - AttributeName: phone
+        KeyType: HASH
+      - AttributeName: record_type
+        KeyType: RANGE
+      GlobalSecondaryIndexes:
+      - IndexName: followup-index
+        KeySchema:
+        - AttributeName: record_type
+          KeyType: HASH
+        - AttributeName: followup_ts
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+  TechAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName:
+        Fn::Sub: yorkshire-bot-tech-alerts-${Environment}
+      Subscription:
+      - Protocol: email
+        Endpoint:
+          Ref: SergioEmail
+  NotifierSNSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn:
+        Ref: TechAlertTopic
+      Protocol: lambda
+      Endpoint:
+        Fn::GetAtt:
+        - NotifierFunction
+        - Arn
+  DLQAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName:
+        Fn::Sub: yorkshire-bot-dlq-alarm-${Environment}
+      AlarmDescription: "Mensagem na DLQ \u2014 processamento falhou 3 vezes"
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+      - Name: QueueName
+        Value:
+          Fn::GetAtt:
+          - DeadLetterQueue
+          - QueueName
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+      - Ref: TechAlertTopic
+      TreatMissingData: notBreaching
+Outputs:
+  WebhookUrl:
+    Description: URL para configurar no Meta WhatsApp Business API
+    Value:
+      Fn::Sub: https://${WebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/webhook
+  WebhookFunctionArn:
+    Value:
+      Fn::GetAtt:
+      - WebhookFunction
+      - Arn
+  ProcessorFunctionArn:
+    Value:
+      Fn::GetAtt:
+      - ProcessorFunction
+      - Arn
+  MorningDispatcherFunctionArn:
+    Value:
+      Fn::GetAtt:
+      - MorningDispatcherFunction
+      - Arn
+  NotifierFunctionArn:
+    Value:
+      Fn::GetAtt:
+      - NotifierFunction
+      - Arn
+  SQSQueueUrl:
+    Value:
+      Ref: MessageQueue
+  DLQUrl:
+    Value:
+      Ref: DeadLetterQueue
+  DynamoDBTable:
+    Value:
+      Ref: ConversationsTable
+  TechSNSTopicArn:
+    Description: "SNS alertas t\xE9cnicos \u2014 Sergio"
+    Value:
+      Ref: TechAlertTopic

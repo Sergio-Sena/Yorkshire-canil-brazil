@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "yorkshire-bot-dev"
+region = "us-east-1"
+s3_bucket = "yorkshire-bot-sam-artifacts-969430605054"
+s3_prefix = "yorkshire-bot-dev"
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+parameter_overrides = "Environment=dev"

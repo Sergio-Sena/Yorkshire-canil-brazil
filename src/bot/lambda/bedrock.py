@@ -185,7 +185,6 @@ def _call_bedrock(system: str, messages: list) -> str:
         kwargs["guardrailConfig"] = {
             "guardrailIdentifier": GUARDRAIL_ID,
             "guardrailVersion":    GUARDRAIL_VERSION,
-            "trace":               "enabled"
         }
 
     resp  = _bedrock.converse(**kwargs)

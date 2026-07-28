@@ -1,0 +1,7 @@
+{
+  "Records": [
+    {
+      "body": "{\"entry\":[{\"changes\":[{\"value\":{\"contacts\":[{\"wa_id\":\"5511982699176\"}],\"messages\":[{\"id\":\"test-msg-002\",\"from\":\"5511982699176\",\"type\":\"text\",\"text\":{\"body\":\"Oi, quero saber sobre os filhotes\"}}]}}]}]}"
+    }
+  ]
+}
