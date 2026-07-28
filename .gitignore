@@ -7,3 +7,11 @@ __pycache__/
 *.pyc
 .coverage
 .pytest_cache/
+
+# Bot — arquivos temporários
+src/bot/lambda/package/
+src/bot/lambda/layer/
+src/bot/lambda/*.zip
+src/bot/*.zip
+src/bot/response*.json
+src/bot/test-payload*.json
