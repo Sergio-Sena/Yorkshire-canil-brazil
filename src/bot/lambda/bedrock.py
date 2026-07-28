@@ -12,7 +12,7 @@ from config import (
     AWS_REGION, BEDROCK_MODEL_ID, GUARDRAIL_ID, GUARDRAIL_VERSION,
     INJECTION_PATTERNS, MAX_INJECTION_ATTEMPTS,
     PRICES, PIX_DISCOUNT_MAX, INSTALLMENTS, RESERVATION_DEPOSIT_PCT,
-    INCLUDED_ITEMS, LOCATION_BY_CLIENT, MAX_TURNS,
+    INCLUDED_ITEMS, LOCATION_BY_CLIENT, PRICE_TIER_BY_STATE, MAX_TURNS,
     BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE, FOLLOWUP_TIMEZONE
 )
 from dynamodb import save_conversation
@@ -38,6 +38,8 @@ _FALLBACK_AGRESSIVE = "Entendo que pode estar frustrado. Estou aqui para ajudar 
 def _build_system_prompt(lead_data: dict) -> str:
     state     = lead_data.get("state", "")
     canil_loc = LOCATION_BY_CLIENT.get(state, LOCATION_BY_CLIENT["default"])
+    price_tier = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
+    prices     = PRICES[price_tier]
     now   = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(TZ)
     h, m  = now.hour, now.minute
     after_cutoff   = (h > NIGHT_MODE_START_HOUR) or (h == NIGHT_MODE_START_HOUR and m >= NIGHT_MODE_START_MINUTE)
@@ -94,14 +96,14 @@ LOCALIZAÇÃO ESTRATÉGICA
 - O canil fica em: {canil_loc}
 - NUNCA informe o endereço exato — diga que o frete está incluso e a entrega é feita com segurança.
 - Não incentive o cliente a buscar pessoalmente.
+- Se o cliente mencionar que é de São Paulo antes de você ter registrado o estado, diga que o canil fica em Minas Gerais.
 
 ═══════════════════════════════════════════
-PREÇOS (já com desconto aplicado)
+PREÇOS (frete incluso, já com desconto aplicado)
 ═══════════════════════════════════════════
-- Capital e cidades até 100km: Macho R${PRICES['capital_100km']['macho']:,} | Fêmea R${PRICES['capital_100km']['femea']:,}
-- Cidades acima de 100km:      Macho R${PRICES['acima_100km']['macho']:,} | Fêmea R${PRICES['acima_100km']['femea']:,}
-- Outros estados:              Macho R${PRICES['outros_estados']['macho']:,} | Fêmea R${PRICES['outros_estados']['femea']:,}
-- Frete: INCLUSO em todos os casos.
+- Macho: R${prices['macho']:,}
+- Fêmea: R${prices['femea']:,}
+- Frete: INCLUSO.
 - Desconto PIX adicional: até R${PIX_DISCOUNT_MAX} (progressivo conforme negociação).
 - Reserva: sinal de {int(RESERVATION_DEPOSIT_PCT*100)}% para garantir o filhote.
 
@@ -185,6 +187,7 @@ def _call_bedrock(system: str, messages: list) -> str:
         kwargs["guardrailConfig"] = {
             "guardrailIdentifier": GUARDRAIL_ID,
             "guardrailVersion":    GUARDRAIL_VERSION,
+            "trace":               "enabled",
         }
 
     resp  = _bedrock.converse(**kwargs)
@@ -199,13 +202,23 @@ def _call_bedrock(system: str, messages: list) -> str:
     # Verifica se guardrail bloqueou
     stop_reason = resp.get("stopReason", "")
     if stop_reason == "guardrail_intervened":
-        # Loga qual política disparou para diagnóstico
         trace = resp.get("trace", {}).get("guardrail", {})
-        for assessment in trace.get("outputAssessments", {}).get(GUARDRAIL_ID, []):
+        logger.warning(f"Guardrail trace bruto: {json.dumps(trace)}")
+
+        # inputAssessments: lista direta; outputAssessments: dict {guardrailId: [assessments]}
+        for assessment in trace.get("inputAssessments", []):
             for policy, result in assessment.items():
-                if isinstance(result, dict) and result.get("action") == "BLOCKED":
-                    logger.warning(f"Guardrail bloqueou output — política: {policy} | detalhe: {result}")
-        logger.warning("Guardrail interveio na resposta")
+                if isinstance(result, dict) and result.get("action") in ("BLOCKED", "ANONYMIZED"):
+                    logger.warning(f"Guardrail bloqueou INPUT — política: {policy} | detalhe: {result}")
+        output_assessments = trace.get("outputAssessments", {})
+        if isinstance(output_assessments, dict):
+            output_assessments = [a for lst in output_assessments.values() for a in lst]
+        for assessment in output_assessments:
+            for policy, result in assessment.items():
+                if isinstance(result, dict) and result.get("action") in ("BLOCKED", "ANONYMIZED"):
+                    logger.warning(f"Guardrail bloqueou OUTPUT — política: {policy} | detalhe: {result}")
+
+        logger.warning(f"Guardrail interveio | tokens input:{usage.get('inputTokens',0)} output:{usage.get('outputTokens',0)}")
         return json.dumps({"message": _FALLBACK_BLOCKED, "action": "reply", "lead_data": {}})
 
     return resp["output"]["message"]["content"][0]["text"]
