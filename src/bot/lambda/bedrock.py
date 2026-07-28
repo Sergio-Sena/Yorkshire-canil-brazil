@@ -200,6 +200,12 @@ def _call_bedrock(system: str, messages: list) -> str:
     # Verifica se guardrail bloqueou
     stop_reason = resp.get("stopReason", "")
     if stop_reason == "guardrail_intervened":
+        # Loga qual política disparou para diagnóstico
+        trace = resp.get("trace", {}).get("guardrail", {})
+        for assessment in trace.get("outputAssessments", {}).get(GUARDRAIL_ID, []):
+            for policy, result in assessment.items():
+                if isinstance(result, dict) and result.get("action") == "BLOCKED":
+                    logger.warning(f"Guardrail bloqueou output — política: {policy} | detalhe: {result}")
         logger.warning("Guardrail interveio na resposta")
         return json.dumps({"message": _FALLBACK_BLOCKED, "action": "reply", "lead_data": {}})
 
