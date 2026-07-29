@@ -13,7 +13,8 @@ from config import (
     INJECTION_PATTERNS, MAX_INJECTION_ATTEMPTS,
     PRICES, PIX_DISCOUNT_MAX, INSTALLMENTS, RESERVATION_DEPOSIT_PCT,
     INCLUDED_ITEMS, LOCATION_BY_CLIENT, PRICE_TIER_BY_STATE, MAX_TURNS,
-    BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE, FOLLOWUP_TIMEZONE
+    BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE, FOLLOWUP_TIMEZONE,
+    FORCE_NIGHT_MODE
 )
 from dynamodb import save_conversation
 from datetime import datetime, timezone
@@ -40,11 +41,14 @@ def _build_system_prompt(lead_data: dict) -> str:
     canil_loc = LOCATION_BY_CLIENT.get(state, LOCATION_BY_CLIENT["default"])
     price_tier = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
     prices     = PRICES[price_tier]
-    now   = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(TZ)
-    h, m  = now.hour, now.minute
-    after_cutoff   = (h > NIGHT_MODE_START_HOUR) or (h == NIGHT_MODE_START_HOUR and m >= NIGHT_MODE_START_MINUTE)
-    before_morning = h < BUSINESS_HOURS_START
-    is_night = after_cutoff or before_morning
+    if FORCE_NIGHT_MODE:
+        is_night = True
+    else:
+        now   = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(TZ)
+        h, m  = now.hour, now.minute
+        after_cutoff   = (h > NIGHT_MODE_START_HOUR) or (h == NIGHT_MODE_START_HOUR and m >= NIGHT_MODE_START_MINUTE)
+        before_morning = h < BUSINESS_HOURS_START
+        is_night = after_cutoff or before_morning
 
     items_str = "\n".join(f"  - {i}" for i in INCLUDED_ITEMS)
     installments_str = "\n".join(
@@ -155,7 +159,34 @@ Responda SEMPRE em JSON válido com esta estrutura:
 """
 
 
-# ── Sanitização de input ──────────────────────────────────────────────────────
+# Mapa rápido cidade → estado para detecção antecipada no system prompt
+_CITY_STATE_MAP = {
+    "são paulo": "SP", "sao paulo": "SP", "sp": "SP",
+    "campinas": "SP", "santos": "SP", "guarulhos": "SP", "osasco": "SP",
+    "rio de janeiro": "RJ", "rj": "RJ", "niteroi": "RJ",
+    "belo horizonte": "MG", "mg": "MG", "uberlandia": "MG",
+    "curitiba": "PR", "pr": "PR", "londrina": "PR",
+    "porto alegre": "RS", "rs": "RS",
+    "florianopolis": "SC", "sc": "SC",
+    "goiania": "GO", "go": "GO",
+    "brasilia": "DF", "df": "DF",
+    "salvador": "BA", "ba": "BA",
+    "recife": "PE", "pe": "PE",
+    "fortaleza": "CE", "ce": "CE",
+    "manaus": "AM", "am": "AM",
+    "belem": "PA", "pa": "PA",
+}
+
+
+def _detect_state(message: str, lead_data: dict) -> str:
+    """Detecta estado do cliente na mensagem atual se ainda não estiver no lead_data."""
+    if lead_data.get("state"):
+        return lead_data["state"]
+    text = message.lower()
+    for keyword, state in _CITY_STATE_MAP.items():
+        if keyword in text:
+            return state
+    return ""
 
 def _sanitize(text: str) -> tuple[str, bool]:
     """
@@ -273,7 +304,11 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
 
     messages.append({"role": "user", "content": [{"text": message}]})
 
-    # Camada 3 — system prompt reinjetado (anti-drift)
+    # Camada 3 — detecta estado antecipadamente para preço correto no system prompt
+    detected_state = _detect_state(message, lead_data)
+    if detected_state and not lead_data.get("state"):
+        lead_data = {**lead_data, "state": detected_state}
+
     system = _build_system_prompt(lead_data)
 
     # Camada 4 — chama Bedrock com guardrails
