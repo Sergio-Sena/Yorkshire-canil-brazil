@@ -125,19 +125,22 @@ def send_typing(phone: str) -> None:
 
 def _build_media_payload(phone: str, caption: str, media: dict) -> dict:
     media_type = media.get("type", "image")
+    media_content = {"caption": caption}
+    if "id" in media:
+        media_content["id"] = media["id"]
+    else:
+        media_content["link"] = media["url"]
     return {
         "messaging_product": "whatsapp",
         "to": phone,
         "type": media_type,
-        media_type: {
-            "link": media["url"],
-            "caption": caption
-        }
+        media_type: media_content
     }
 
 
 def _post(payload: dict) -> bool:
     data = json.dumps(payload).encode("utf-8")
+    logger.info(f"WhatsApp payload: {json.dumps(payload)[:300]}")
     req = urllib.request.Request(
         WHATSAPP_API_URL,
         data=data,
@@ -149,10 +152,11 @@ def _post(payload: dict) -> bool:
     )
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
+            body = resp.read().decode()
+            logger.info(f"WhatsApp API response {resp.status}: {body[:200]}")
             return resp.status == 200
     except urllib.error.HTTPError as e:
         logger.error(f"WhatsApp API error {e.code}: {e.read().decode()}")
-        return False
     except Exception as e:
         logger.error(f"WhatsApp send failed: {e}")
         return False

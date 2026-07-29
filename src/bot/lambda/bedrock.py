@@ -127,7 +127,7 @@ FLUXO DE ATENDIMENTO
 1. Saudação calorosa → perguntar nome e cidade.
 2. Identificar preferência (macho/fêmea) e apresentar preço correto pela região.
 3. Apresentar diferenciais: pedigree, campeão nacional, criação familiar, itens inclusos.
-4. Oferecer envio de fotos dos filhotes disponíveis.
+4. Oferecer envio de fotos dos filhotes disponíveis. Se o cliente aceitar ou pedir fotos, use action "send_media" (sem "message" adicional).
 5. Conduzir para reserva: "Posso reservar um para você com {int(RESERVATION_DEPOSIT_PCT*100)}% de sinal!"
 6. Se cliente hesitar: contornar objeção, oferecer parcelamento, reforçar valor.
 7. Fechamento → informar sobre sinal e próximos passos.
@@ -151,7 +151,10 @@ Responda SEMPRE em JSON válido com esta estrutura:
   }}
 }}
 - "media" e "reason" são opcionais — omita se não aplicável.
-- "lead_data" deve conter apenas campos que você identificou na conversa.
+- Use action "send_media" quando: cliente pedir para ver fotos ou aceitar ver fotos dos filhotes.
+  Exemplo de input → output:
+  Cliente: "quero ver as fotos" → {{"action": "send_media", "message": "Olha que lindo(a)! 🐶", "lead_data": {{...}}}}
+  Cliente: "sim, manda" → {{"action": "send_media", "message": "Veja as fotos! 😊", "lead_data": {{...}}}}
 - Use action "transfer" quando: cliente pedir humano, {MAX_TURNS} turns atingidos, cliente agitado (2ª vez), dúvida que não consegue responder.
 - Use action "close" quando: cliente confirmar reserva/pagamento do sinal.
 - Use action "archive" quando: cliente explicitamente desistir ou sumir após follow-up.
@@ -159,7 +162,13 @@ Responda SEMPRE em JSON válido com esta estrutura:
 """
 
 
-# Mapa rápido cidade → estado para detecção antecipada no system prompt
+_FOTO_PATTERNS = re.compile(
+    r"(foto|fotos|imagem|imagens|ver|mostr|mand|envi).{0,20}(filhot|yorkshire|macho|f[eê]mea|cachorro|pet)|"
+    r"(filhot|yorkshire|macho|f[eê]mea).{0,20}(foto|fotos|imagem|ver|mostr)",
+    re.IGNORECASE
+)
+
+# Mapa rapido cidade -> estado para deteccao antecipada no system prompt
 _CITY_STATE_MAP = {
     "são paulo": "SP", "sao paulo": "SP", "sp": "SP",
     "campinas": "SP", "santos": "SP", "guarulhos": "SP", "osasco": "SP",
@@ -315,6 +324,7 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
     try:
         raw      = _call_bedrock(system, messages)
         response = _parse_response(raw)
+        logger.info(f"Claude action: {response.get('action')} | message: {response.get('message','')[:80]}")
     except ClientError as e:
         code = e.response["Error"]["Code"]
         msg  = e.response["Error"].get("Message", "")
@@ -346,5 +356,9 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
     # Guarda injection_attempts se existia
     if lead_data.get("injection_attempts"):
         response["lead_data"]["injection_attempts"] = lead_data["injection_attempts"]
+
+    # Forca send_media se cliente pediu fotos e Claude nao usou a action
+    if _FOTO_PATTERNS.search(message) and response.get("action") != "send_media":
+        response["action"] = "send_media"
 
     return response

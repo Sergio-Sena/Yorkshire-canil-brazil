@@ -110,6 +110,7 @@ INSTALLMENTS = {
 RESERVATION_DEPOSIT_PCT = 0.30
 
 FORCE_NIGHT_MODE = os.getenv("FORCE_NIGHT_MODE", "").lower() in ("1", "true", "yes")
+MEDIA_JSON_URL = os.getenv("MEDIA_JSON_URL", "https://d10mjoe1zes9j1.cloudfront.net/yorkshire/media.json")
 
 # Localização declarada ao cliente para dissuadir retirada (não afeta preço)
 LOCATION_BY_CLIENT = {
