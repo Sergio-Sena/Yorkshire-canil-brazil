@@ -109,7 +109,7 @@ INSTALLMENTS = {
 
 RESERVATION_DEPOSIT_PCT = 0.30
 
-FRETE_INCLUSO = True
+FORCE_NIGHT_MODE = os.getenv("FORCE_NIGHT_MODE", "").lower() in ("1", "true", "yes")
 
 # Localização declarada ao cliente para dissuadir retirada (não afeta preço)
 LOCATION_BY_CLIENT = {
