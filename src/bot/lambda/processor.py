@@ -6,6 +6,7 @@ Processa: DynamoDB → Bedrock → WhatsApp → ações pós-resposta.
 
 import json
 import logging
+import urllib.request
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from whatsapp import extract_message, send_message, send_typing, mask_phone
@@ -16,7 +17,7 @@ from dynamodb import (
 from bedrock import generate_response
 from config import (
     BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE,
-    FOLLOWUP_TIMEZONE, THIAGO_PHONE
+    FOLLOWUP_TIMEZONE, THIAGO_PHONE, MEDIA_JSON_URL
 )
 
 logger = logging.getLogger()
@@ -91,7 +92,10 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
     media   = response.get("media")
     lead    = response.get("lead_data", {})
 
-    if media:
+    if action == "send_media":
+        logger.info(f"Enviando galeria de fotos para {mask_phone(phone)} | preference: {lead.get('preference')}")
+        _send_media_gallery(phone, lead.get("preference", "indefinido"))
+    elif media:
         send_message(phone, message, media=media)
     else:
         send_message(phone, message)
@@ -124,6 +128,27 @@ def _is_business_hours() -> bool:
     after_cutoff  = (h > NIGHT_MODE_START_HOUR) or (h == NIGHT_MODE_START_HOUR and m >= NIGHT_MODE_START_MINUTE)
     before_morning = h < BUSINESS_HOURS_START
     return not (after_cutoff or before_morning)
+
+
+def _send_media_gallery(phone: str, preference: str) -> None:
+    """Busca fotos do media.json no CloudFront e envia para o cliente."""
+    try:
+        with urllib.request.urlopen(MEDIA_JSON_URL, timeout=5) as resp:
+            media_data = json.loads(resp.read())
+    except Exception as e:
+        logger.error(f"Erro ao carregar media.json: {e}")
+        send_message(phone, "Vou pedir para o Thiago te enviar as fotos agora! 😊")
+        return
+
+    fotos = media_data.get(preference, []) or media_data.get("femea", [])
+    if not fotos:
+        send_message(phone, "Vou pedir para o Thiago te enviar as fotos agora! 😊")
+        return
+
+    for i, foto in enumerate(fotos):
+        caption = "Olha que lindo(a)! 🐶" if i == 0 else ""
+        media = {"type": "image", "id": foto["id"]} if "id" in foto else {"type": "image", "url": foto["url"]}
+        send_message(phone, caption, media=media)
 
 
 def _notify_thiago(phone: str, lead: dict, reason: str):
