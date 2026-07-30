@@ -46,7 +46,12 @@
 - **Notificações**: Bot avisa Thiago quando precisar de intervenção humana
 - **Docs**: `docs/IA DE ATENDIMENTO - WATTSUP.md`, `docs/chatbot-ia-arquitetura.md`, `docs/proposta-chatbot-ia-cliente.md`
 
-#### 🔧 Variáveis Lambda (`yorkshire-bot-processor-dev`)
+#### 🔧 Números WhatsApp
+| Número | Descrição |
+|--------|----------|
+| `5511982699176` | Número bot dev (Sergio) — `Phone Number ID: 1219655164565164` |
+| `5511984969596` | Número testes (Sergio pessoal) |
+| `5511960197657` | Chip do Thiago — candidato a número de produção do bot |
 | Variável | Valor |
 |----------|-------|
 | `WHATSAPP_PHONE_ID` | `1219655164565164` |
