@@ -10,13 +10,14 @@ import boto3
 from botocore.exceptions import ClientError
 from config import (
     AWS_REGION, BEDROCK_MODEL_ID, GUARDRAIL_ID, GUARDRAIL_VERSION,
-    INJECTION_PATTERNS, MAX_INJECTION_ATTEMPTS,
+    INJECTION_PATTERNS, MAX_INJECTION_ATTEMPTS, MAX_MESSAGE_LENGTH,
     PRICES, PIX_DISCOUNT_MAX, INSTALLMENTS, RESERVATION_DEPOSIT_PCT,
     INCLUDED_ITEMS, LOCATION_BY_CLIENT, PRICE_TIER_BY_STATE, MAX_TURNS,
     BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE, FOLLOWUP_TIMEZONE,
     FORCE_NIGHT_MODE
 )
 from dynamodb import save_conversation
+from whatsapp import mask_phone
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
@@ -200,14 +201,25 @@ def _detect_state(message: str, lead_data: dict) -> str:
             return state
     return ""
 
-def _sanitize(text: str) -> tuple[str, bool]:
+def _sanitize(text: str, phone: str = "", attempts: int = 0) -> tuple[str, bool]:
     """
-    Verifica padrões de injection/jailbreak.
+    Verifica padrões de injection/jailbreak e limite de tamanho.
     Retorna (texto_limpo, foi_detectado).
     """
+    if len(text) > MAX_MESSAGE_LENGTH:
+        logger.warning(
+            f"Mensagem muito longa | phone={mask_phone(phone)} "
+            f"chars={len(text)} limite={MAX_MESSAGE_LENGTH}"
+        )
+        return text[:MAX_MESSAGE_LENGTH], True
+
     for pattern in INJECTION_PATTERNS:
         if re.search(pattern, text, re.IGNORECASE):
-            logger.warning(f"Injection detectado: pattern={pattern}")
+            logger.warning(
+                f"Injection detectado | phone={mask_phone(phone)} "
+                f"pattern={pattern!r} attempts={attempts + 1} "
+                f"msg_preview={text[:60]!r}"
+            )
             return text, True
     return text, False
 
@@ -289,19 +301,29 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
     Retorna dict com message, action, lead_data e opcionalmente media/reason.
     """
     # Camada 1 — sanitização de injection
-    _, injected = _sanitize(message)
+    current_attempts = lead_data.get("injection_attempts", 0)
+    _, injected = _sanitize(message, phone=phone, attempts=current_attempts)
     if injected:
-        attempts = lead_data.get("injection_attempts", 0) + 1
+        attempts = current_attempts + 1
         lead_data["injection_attempts"] = attempts
         save_conversation(phone, message_in=message, message_out=_FALLBACK_INJECTION,
                           lead_data=lead_data)
 
         if attempts >= MAX_INJECTION_ATTEMPTS:
-            logger.warning(f"Limite de injection atingido para {phone} — bloqueando")
+            logger.warning(f"Limite de injection atingido | phone={mask_phone(phone)} attempts={attempts} — transferindo")
             return {
                 "message":   "Não consigo continuar esse atendimento. Um humano entrará em contato.",
                 "action":    "transfer",
                 "reason":    "INJECTION_LIMIT_REACHED",
+                "lead_data": lead_data
+            }
+
+        if attempts == MAX_INJECTION_ATTEMPTS - 1:
+            logger.warning(f"Injection reincidente | phone={mask_phone(phone)} attempts={attempts} — escalando para Thiago")
+            return {
+                "message":   "Não consigo processar essa mensagem. Prefere falar com nossa equipe? 😊",
+                "action":    "transfer",
+                "reason":    "INJECTION_ESCALATION",
                 "lead_data": lead_data
             }
 

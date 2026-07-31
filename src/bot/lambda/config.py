@@ -35,6 +35,7 @@ TYPING_DELAY_MAX = 5
 # ── Limites de conversa ───────────────────────────────────────────────────────
 MAX_TURNS              = 20   # após 20 mensagens sem fechamento → transfere pro Thiago
 MAX_INJECTION_ATTEMPTS = 3    # tentativas de injection antes de bloquear
+MAX_MESSAGE_LENGTH     = 1000 # limite de caracteres por mensagem
 CONVERSATION_TTL_DAYS  = 90   # LGPD — dados apagados automaticamente após 90 dias
 
 # ── Horário comercial (America/Sao_Paulo) ─────────────────────────────────────
@@ -56,18 +57,40 @@ GUARDRAIL_VERSION = os.getenv("GUARDRAIL_VERSION", "DRAFT")
 
 # Padrões de prompt injection para sanitização prévia (regex, case-insensitive)
 INJECTION_PATTERNS = [
+    # Português
     r"ignore\s+(suas\s+)?instru[çc][õo]es",
     r"novo\s+prompt",
     r"modo\s+(teste|dev|desenvolvedor)",
     r"sem\s+restri[çc][õo]es",
     r"revel[ae]\s+(o\s+)?(prompt|instru[çc][õo]es|sistema)",
     r"repita\s+(suas\s+)?instru[çc][õo]es",
-    r"\[SYSTEM\]",
-    r"\[INSTRU[ÇC][ÃA]O\]",
     r"finja\s+que\s+voc[êe]",
     r"voc[êe]\s+agora\s+[ée]",
+    r"esquece\s+(as\s+)?regras",
+    r"sem\s+filtros?",
+    r"desative\s+(o\s+)?(filtro|guardrail|restri[çc][õo]es)",
+    # Inglês
+    r"ignore\s+(your\s+)?instructions",
+    r"ignore\s+previous",
+    r"forget\s+(your\s+)?(rules|instructions|guidelines)",
+    r"act\s+as\s+(a\s+)?(?:different|new|another)",
+    r"pretend\s+(you\s+are|to\s+be)",
+    r"you\s+are\s+now",
+    r"new\s+persona",
+    r"without\s+(any\s+)?restrictions?",
+    r"no\s+(more\s+)?restrictions?",
+    r"bypass\s+(the\s+)?(filter|guardrail|rules)",
+    # Tags e encoding
+    r"\[SYSTEM\]",
+    r"\[INSTRU[ÇC][ÃA]O\]",
+    r"<\s*/?\s*(?:system|prompt|inst|instruction)\s*>",
+    r"base64",
+    r"\\u00[0-9a-fA-F]{2}",
+    # Jailbreaks conhecidos
     r"\bDAN\b",
     r"jailbreak",
+    r"developer\s+mode",
+    r"god\s+mode",
 ]
 
 # ── Regras comerciais ─────────────────────────────────────────────────────────
