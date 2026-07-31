@@ -100,22 +100,22 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
     else:
         send_message(phone, message)
 
-    save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
-
-    if action in ("transfer", "close"):
-        reason = response.get("reason", "") if action == "transfer" else "Fechamento — aguardando sinal 30%"
-
+    if action == "close":
+        _handle_close(phone, lead, conversation)
+    elif action == "transfer":
+        reason = response.get("reason", "")
+        save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
         if _is_business_hours():
-            # Horário comercial — notifica Thiago imediatamente via WhatsApp
             _notify_thiago(phone, lead, reason)
         else:
-            # Fora do horário — salva para notificar às 8h via EventBridge
             save_pending_transfer(phone, lead, reason)
             schedule_followup(phone, followup_number=1)
             logger.info(f"Lead quente fora do horário — agendado para 8h: {mask_phone(phone)}")
-
     elif action == "archive":
+        save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
         archive_lead(phone)
+    else:
+        save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -149,6 +149,39 @@ def _send_media_gallery(phone: str, preference: str) -> None:
         caption = "Olha que lindo(a)! 🐶" if i == 0 else ""
         media = {"type": "image", "id": foto["id"]} if "id" in foto else {"type": "image", "url": foto["url"]}
         send_message(phone, caption, media=media)
+
+
+def _handle_close(phone: str, lead: dict, conversation: dict):
+    """Fluxo completo de fechamento: confirma cliente, pausa IA, notifica Thiago."""
+    from config import PRICES, PRICE_TIER_BY_STATE, RESERVATION_DEPOSIT_PCT
+
+    # Calcula valor do sinal
+    state      = lead.get("state", "")
+    tier       = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
+    preference = lead.get("preference", "indefinido")
+    preco      = PRICES[tier].get(preference, PRICES[tier]["macho"])
+    sinal      = int(preco * RESERVATION_DEPOSIT_PCT)
+
+    # 1. Mensagem de confirmacao para o cliente
+    send_message(phone, (
+        f"Perfeito! Seu interesse está registrado. 🐾\n"
+        f"O Thiago vai entrar em contato em breve para confirmar o sinal de R${sinal:,} "
+        f"e garantir seu filhote. Qualquer dúvida, é só chamar!"
+    ))
+
+    # 2. Pausa a IA nessa conversa (igual ao human_takeover)
+    merged_lead = {**lead, "human_takeover": True, "status": "fechado"}
+    save_conversation(phone, message_in="", message_out="[FECHAMENTO]", lead_data=merged_lead)
+    logger.info(f"Conversa pausada após fechamento | phone={mask_phone(phone)}")
+
+    # 3. Notifica Thiago com resumo completo
+    reason = f"FECHAMENTO | Sinal: R${sinal:,} | Preferência: {preference} | Estado: {state or '?'}"
+    if _is_business_hours():
+        _notify_thiago(phone, merged_lead, reason)
+    else:
+        save_pending_transfer(phone, merged_lead, reason)
+        schedule_followup(phone, followup_number=1)
+        logger.info(f"Fechamento fora do horário — agendado para 8h: {mask_phone(phone)}")
 
 
 def _notify_thiago(phone: str, lead: dict, reason: str):
