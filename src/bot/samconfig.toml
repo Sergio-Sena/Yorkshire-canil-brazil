@@ -1,0 +1,23 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name        = "yorkshire-bot-dev"
+region            = "us-east-1"
+confirm_changeset = false
+capabilities      = "CAPABILITY_IAM CAPABILITY_AUTO_EXPAND"
+resolve_s3        = true
+template_file     = "infra/template.yaml"
+
+parameter_overrides = [
+  "Environment=dev",
+  "BedrockModelId=us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+  "GuardrailId=l2sg39cfds01",
+  "GuardrailVersion=7",
+  "WhatsappPhoneId=1209550188914168",
+  "ThiagoPhone=5511977118201",
+  "SergioPhone=5511982699176",
+  "SergioEmail=senanetworker@gmail.com",
+  "WhatsappToken=PLACEHOLDER",
+  "WhatsappAppSecret=PLACEHOLDER",
+  "WebhookVerifyToken=PLACEHOLDER"
+]
