@@ -50,7 +50,7 @@ Parameters:
     Type: String
     Description: WhatsApp do Sergio para alertas técnicos ativos (ex 5511999999999)
 
-# ── Globals ───────────────────────────────────────────────────────────────────
+# ── Tags globais (Cost Explorer por projeto) ──────────────────────────────────
 Globals:
   Function:
     Runtime: python3.12
@@ -58,6 +58,11 @@ Globals:
     MemorySize: 256
     Layers:
       - !Ref DependenciesLayer
+    Tags:
+      Project: yorkshire-bot
+      Client: yorkshire-canil-brazil
+      Env: !Ref Environment
+      ManagedBy: ss-technologies
     Environment:
       Variables:
         AWS_REGION_NAME:      !Ref AWS::Region
@@ -145,6 +150,27 @@ Resources:
             FunctionResponseTypes:
               - ReportBatchItemFailures
 
+  # ── Lambda DLQ Consumer — fallback para cliente que ficaria no vazio ──────
+  DLQConsumerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub yorkshire-bot-dlq-consumer-${Environment}
+      CodeUri: ../lambda/
+      Handler: dlq_consumer.lambda_handler
+      Timeout: 30
+      Description: Consome DLQ — avisa cliente que houve instabilidade e notifica Sergio
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConversationsTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt TechAlertTopic.TopicName
+      Events:
+        DLQTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DeadLetterQueue.Arn
+            BatchSize: 1
+
   # ── Lambda Morning Dispatcher — notifica Thiago com leads noturnos às 8h ─
   MorningDispatcherFunction:
     Type: AWS::Serverless::Function
@@ -190,6 +216,11 @@ Resources:
       Name: !Sub yorkshire-bot-api-${Environment}
       StageName: !Ref Environment
       Description: Webhook Meta WhatsApp Business API
+      Tags:
+        Project: yorkshire-bot
+        Client: yorkshire-canil-brazil
+        Env: !Ref Environment
+        ManagedBy: ss-technologies
 
   # ── SQS FIFO — fila principal ─────────────────────────────────────────────
   MessageQueue:
@@ -203,6 +234,15 @@ Resources:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
         maxReceiveCount: 3
+      Tags:
+        - Key: Project
+          Value: yorkshire-bot
+        - Key: Client
+          Value: yorkshire-canil-brazil
+        - Key: Env
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: ss-technologies
 
   # ── SQS FIFO — Dead Letter Queue ─────────────────────────────────────────
   DeadLetterQueue:
@@ -211,6 +251,15 @@ Resources:
       QueueName: !Sub yorkshire-bot-dlq-${Environment}.fifo
       FifoQueue: true
       MessageRetentionPeriod: 86400
+      Tags:
+        - Key: Project
+          Value: yorkshire-bot
+        - Key: Client
+          Value: yorkshire-canil-brazil
+        - Key: Env
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: ss-technologies
 
   # ── DynamoDB — tabela única com GSI para follow-up ────────────────────────
   ConversationsTable:
@@ -244,6 +293,15 @@ Resources:
               KeyType: RANGE
           Projection:
             ProjectionType: ALL
+      Tags:
+        - Key: Project
+          Value: yorkshire-bot
+        - Key: Client
+          Value: yorkshire-canil-brazil
+        - Key: Env
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: ss-technologies
 
   # ── SNS — alertas técnicos (Sergio: DLQ, erros críticos) ─────────────────
   TechAlertTopic:
@@ -253,6 +311,15 @@ Resources:
       Subscription:
         - Protocol: email
           Endpoint: !Ref SergioEmail
+      Tags:
+        - Key: Project
+          Value: yorkshire-bot
+        - Key: Client
+          Value: yorkshire-canil-brazil
+        - Key: Env
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: ss-technologies
 
   NotifierSNSSubscription:
     Type: AWS::SNS::Subscription
@@ -260,6 +327,28 @@ Resources:
       TopicArn: !Ref TechAlertTopic
       Protocol: lambda
       Endpoint: !GetAtt NotifierFunction.Arn
+
+  # ── Lambda Cost Explorer — custo mensal acumulado do bot ──────────────────
+  CostExplorerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub yorkshire-bot-cost-${Environment}
+      CodeUri: ../lambda/
+      Handler: cost_explorer.lambda_handler
+      Timeout: 15
+      Description: Retorna custo mensal acumulado do bot via Cost Explorer (tag Project=yorkshire-bot)
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: ce:GetCostAndUsage
+              Resource: "*"
+      Events:
+        CostApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: GET
+            Path: /bot-cost
 
   # ── CloudWatch Alarm — DLQ com mensagem = problema crítico ───────────────
   DLQAlarm:
@@ -293,6 +382,9 @@ Outputs:
   ProcessorFunctionArn:
     Value: !GetAtt ProcessorFunction.Arn
 
+  DLQConsumerFunctionArn:
+    Value: !GetAtt DLQConsumerFunction.Arn
+
   MorningDispatcherFunctionArn:
     Value: !GetAtt MorningDispatcherFunction.Arn
 
@@ -311,3 +403,7 @@ Outputs:
   TechSNSTopicArn:
     Description: SNS alertas técnicos — Sergio
     Value: !Ref TechAlertTopic
+
+  BotCostApiUrl:
+    Description: Endpoint custo mensal do bot (usar no painel-gestor)
+    Value: !Sub https://${WebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/bot-cost

@@ -15,6 +15,16 @@ logger.setLevel(logging.INFO)
 SERGIO_PHONE = os.getenv("SERGIO_PHONE", "")   # ex: 5511999999999
 
 
+def notify_sergio(text: str) -> None:
+    """Envia mensagem direta para Sergio no WhatsApp. Reutilizável por outras Lambdas."""
+    if not SERGIO_PHONE:
+        logger.error("SERGIO_PHONE não configurado — notificação não enviada")
+        return
+    sent = send_message(SERGIO_PHONE, text)
+    if not sent:
+        logger.error("Falha ao enviar notificação WhatsApp para Sergio")
+
+
 def lambda_handler(event, context):
     for record in event.get("Records", []):
         try:
