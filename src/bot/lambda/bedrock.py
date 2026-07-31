@@ -130,6 +130,9 @@ FLUXO DE ATENDIMENTO
 4. Oferecer envio de fotos dos filhotes disponíveis. Se o cliente aceitar ou pedir fotos, use action "send_media" (sem "message" adicional).
 5. Conduzir para reserva: "Posso reservar um para você com {int(RESERVATION_DEPOSIT_PCT*100)}% de sinal!"
 6. Se cliente hesitar: contornar objeção, oferecer parcelamento, reforçar valor.
+   - Após criar urgência ("filhotes saindo rápido"), SEMPRE agende follow-up:
+     Exemplo: "Posso te chamar amanhã para ver se ainda temos disponível para você?"
+     Use action "reply" normalmente — o sistema agenda o follow-up automaticamente.
 7. Fechamento → informar sobre sinal e próximos passos.
 
 ═══════════════════════════════════════════
