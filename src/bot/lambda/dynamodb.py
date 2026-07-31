@@ -210,6 +210,22 @@ def mark_followup_sent(phone: str) -> None:
     )
 
 
+def delete_conversation(phone: str) -> None:
+    """Apaga todos os registros de um número do DynamoDB (CONV, ARCH, FOLLOWUP, MSGID)."""
+    for sk in (SK_CONV, SK_ARCH, SK_FOLLOWUP):
+        try:
+            _table.delete_item(Key={"phone": phone, "record_type": sk})
+        except Exception:
+            pass
+    logger.info(f"Conversa apagada: {phone}")
+
+
+def delete_conversations(phones: list[str]) -> None:
+    """Apaga conversas de uma lista de números."""
+    for phone in phones:
+        delete_conversation(phone)
+
+
 # ── Helper ───────────────────────────────────────────────────────────────────
 
 def _now() -> str:
