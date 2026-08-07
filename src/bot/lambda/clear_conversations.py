@@ -26,7 +26,7 @@ def delete_phone(phone: str):
 
 
 def delete_all():
-    confirm = input("⚠️  Apagar TODAS as conversas? Digite 'sim' para confirmar: ")
+    confirm = input("Apagar TODAS as conversas? Digite 'sim' para confirmar: ")
     if confirm.strip().lower() != "sim":
         print("Cancelado.")
         return

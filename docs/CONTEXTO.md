@@ -37,13 +37,16 @@
 - **Status**: End-to-end validado com número real (`9176`)
 - **Objetivo**: Substituir bot engessado (R$200/mês, opções 1/2/3) por bot com IA
 - **Infraestrutura**: AWS (roda em nuvem — não trava celular)
-- **Número bot**: `9176` — Phone Number ID `1219655164565164` (produção)
-- **Número testes**: `9596` (Sergio)
-- **Guardrail**: `l2sg39cfds01` versão 5 — tópicos: política, religião, concorrentes
+- **Número bot**: `9176` — Phone Number ID `1209550188914168` (em uso)
+- **Número suporte Sergio**: `5511982699176`
+- **Número testes**: `9596` (Sergio pessoal)
+- **Guardrail**: `l2sg39cfds01` versão 7 — tópicos: política, religião, concorrentes
 - **Preços**: por estado do cliente (`PRICE_TIER_BY_STATE`) — SP: R$3.949/R$4.949
 - **Localização declarada**: SP → "Minas Gerais", outros → "São Paulo" (dissuadir retirada)
-- **Acesso**: Painel web para Thiago acompanhar conversas e intervir manualmente
-- **Notificações**: Bot avisa Thiago quando precisar de intervenção humana
+- **Notificações**: Bot avisa Thiago via `https://wa.me/{phone}` (link clicável) quando precisar de intervenção
+- **Sinal de 30%**: removido do fluxo da Bella e da notificação ao Thiago
+- **Conhecimento técnico**: micro/mini/toy (não reconhecido), Goldust (sem FCI), microchip, tamanho adulto
+- **Bot antigo**: mensagem de encerramento ignorada (fix loop)
 - **Docs**: `docs/IA DE ATENDIMENTO - WATTSUP.md`, `docs/chatbot-ia-arquitetura.md`, `docs/proposta-chatbot-ia-cliente.md`
 
 #### 🔧 Números WhatsApp
@@ -80,6 +83,7 @@
 - Thiago já usou API antes (bot engessado R$200/mês — cancelado)
 - Número do Thiago pode já estar habilitado para API
 - Esposa do Thiago tem acesso vinculado (normal + business) — será desconectada na migração
+- **Perfil do número** (foto, nome, descrição, site): [Acessar no Meta Business Manager](https://business.facebook.com/latest/settings/whatsapp_account?business_id=882212698821548&nav_ref=bizweb_settings_asset_linkout&selected_asset_id=2508011329664874&selected_asset_type=whatsapp-business-account&detail_view_tab=PHONE_NUMBERS)
 
 ---
 

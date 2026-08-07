@@ -15,3 +15,13 @@ src/bot/lambda/*.zip
 src/bot/*.zip
 src/bot/response*.json
 src/bot/test-payload*.json
+src/bot/.aws-sam/
+src/bot/media/*.jpg
+src/bot/media/*.png
+src/bot/media/*.webp
+
+# Arquivos locais temporários
+.vscode/
+hist*.txt
+historico*.txt
+out.json

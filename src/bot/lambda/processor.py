@@ -50,6 +50,11 @@ def _process(raw_body: dict):
 
     logger.info(f"Processando mensagem de {mask_phone(phone)}")
 
+    # Ignora mensagens automáticas do bot antigo (loop de encerramento)
+    if "Por falta de resposta, estamos encerrando esse atendimento" in text:
+        logger.info(f"Mensagem do bot antigo ignorada: {mask_phone(phone)}")
+        return
+
     # Thiago respondendo manualmente → pausa IA
     if _is_owner_message(raw_body):
         _mark_human_takeover(phone)
@@ -165,7 +170,7 @@ def _handle_close(phone: str, lead: dict, conversation: dict):
     # 1. Mensagem de confirmacao para o cliente
     send_message(phone, (
         f"Perfeito! Seu interesse está registrado. 🐾\n"
-        f"O Thiago vai entrar em contato em breve para confirmar o sinal de R${sinal:,} "
+        f"O Thiago vai entrar em contato em breve para finalizar os detalhes "
         f"e garantir seu filhote. Qualquer dúvida, é só chamar!"
     ))
 
@@ -175,7 +180,7 @@ def _handle_close(phone: str, lead: dict, conversation: dict):
     logger.info(f"Conversa pausada após fechamento | phone={mask_phone(phone)}")
 
     # 3. Notifica Thiago com resumo completo
-    reason = f"FECHAMENTO | Sinal: R${sinal:,} | Preferência: {preference} | Estado: {state or '?'}"
+    reason = f"FECHAMENTO | Preferência: {preference} | Estado: {state or '?'}"
     if _is_business_hours():
         _notify_thiago(phone, merged_lead, reason)
     else:
@@ -196,7 +201,7 @@ def _notify_thiago(phone: str, lead: dict, reason: str):
 
     send_message(THIAGO_PHONE, (
         f"🔥 *Lead Yorkshire*\n"
-        f"📱 {mask_phone(phone)}\n"
+        f"📱 https://wa.me/{phone}\n"
         f"👤 {name} — {city}\n"
         f"🐶 Preferência: {pref}\n"
         f"📋 {reason}"
