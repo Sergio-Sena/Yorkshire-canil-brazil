@@ -33,11 +33,11 @@
 - Painel: `https://sstrafegopago.sstechnologies-cloud.com/painel-gestor.html`
 - Token renovação: `npm run renew:token` no projeto SS-Gestao-de-Trafego
 
-### 2. Bot de Atendimento WhatsApp ✅ Sprint 2 concluído
-- **Status**: End-to-end validado com número real (`9176`)
+### 2. Bot de Atendimento WhatsApp ✅ Sprint 3 concluído — EM PRODUÇÃO
+- **Status**: 100% funcional em produção
 - **Objetivo**: Substituir bot engessado (R$200/mês, opções 1/2/3) por bot com IA
 - **Infraestrutura**: AWS (roda em nuvem — não trava celular)
-- **Número bot**: `9176` — Phone Number ID `1209550188914168` (em uso)
+- **Número bot**: `7657` — `5511960197657` (produção)
 - **Número suporte Sergio**: `5511982699176`
 - **Número testes**: `9596` (Sergio pessoal)
 - **Guardrail**: `l2sg39cfds01` versão 7 — tópicos: política, religião, concorrentes
@@ -47,6 +47,7 @@
 - **Sinal de 30%**: removido do fluxo da Bella e da notificação ao Thiago
 - **Conhecimento técnico**: micro/mini/toy (não reconhecido), Goldust (sem FCI), microchip, tamanho adulto
 - **Bot antigo**: mensagem de encerramento ignorada (fix loop)
+- **Follow-up EventBridge**: ✅ `yorkshire-bot-morning-dispatcher-dev` + `cron(0 11 * * ? *)` (8h BRT) ENABLED
 - **Docs**: `docs/IA DE ATENDIMENTO - WATTSUP.md`, `docs/chatbot-ia-arquitetura.md`, `docs/proposta-chatbot-ia-cliente.md`
 
 #### 🔧 Números WhatsApp
@@ -54,7 +55,7 @@
 |--------|----------|
 | `5511982699176` | Número bot dev (Sergio) — `Phone Number ID: 1219655164565164` |
 | `5511984969596` | Número testes (Sergio pessoal) |
-| `5511960197657` | Chip do Thiago — candidato a número de produção do bot |
+| `5511960197657` | Número de produção do bot (Thiago) ✅ |
 | Variável | Valor |
 |----------|-------|
 | `WHATSAPP_PHONE_ID` | `1219655164565164` |
@@ -110,12 +111,12 @@
 
 ## 🚧 Pendências
 
-- [ ] Restaurar acesso Admin do Sergio na conta Google Ads (alinhar segunda-feira com Thiago)
-- [ ] Fechar contrato bot WhatsApp (sábado)
-- [ ] Definir número temporário para desenvolvimento do bot
+- [ ] Restaurar acesso Admin do Sergio na conta Google Ads
 - [ ] Implementar tracking UTM no .com (Wix)
 - [ ] Melhorias landing page .com.br (deferido — aguarda .com.br virar página principal)
 - [ ] Investigar qualidade leads PMax
+- [ ] Perfil WhatsApp Business do 7657 (foto, nome, descrição) — [link Meta](https://business.facebook.com/latest/settings/whatsapp_account?business_id=882212698821548&nav_ref=bizweb_settings_asset_linkout&selected_asset_id=2508011329664874&selected_asset_type=whatsapp-business-account&detail_view_tab=PHONE_NUMBERS)
+- [ ] Painel do Thiago (SS-Gestao-de-Trafego) — próximo sprint
 
 ---
 
