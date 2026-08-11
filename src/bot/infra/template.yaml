@@ -141,6 +141,11 @@ Resources:
                 - bedrock:InvokeModelWithResponseStream
                 - bedrock:ApplyGuardrail
               Resource: "*"
+            - Effect: Allow
+              Action:
+                - ssm:GetParameter
+              Resource:
+                - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yorkshire-bot/prompt/*
       Events:
         SQSTrigger:
           Type: SQS
@@ -216,6 +221,20 @@ Resources:
       Name: !Sub yorkshire-bot-api-${Environment}
       StageName: !Ref Environment
       Description: Webhook Meta WhatsApp Business API
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://sstrafegopago.sstechnologies-cloud.com"
+          - "https://yorkshire.sstechnologies-cloud.com"
+          - "http://localhost:8000"
+        AllowHeaders:
+          - "Content-Type"
+          - "x-api-key"
+        AllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "PATCH"
+          - "OPTIONS"
       Tags:
         Project: yorkshire-bot
         Client: yorkshire-canil-brazil
@@ -328,6 +347,87 @@ Resources:
       Protocol: lambda
       Endpoint: !GetAtt NotifierFunction.Arn
 
+  # ── Lambda Prompt Manager — editor de prompt via SSM ───────────────────────
+  PromptManagerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub yorkshire-bot-prompt-manager-${Environment}
+      CodeUri: ../lambda/
+      Handler: prompt_manager.lambda_handler
+      Timeout: 15
+      Description: CRUD do system prompt via SSM — GET/PUT/rollback com validação
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ssm:GetParameter
+                - ssm:PutParameter
+              Resource:
+                - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yorkshire-bot/prompt/*
+      Events:
+        PromptGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: GET
+            Path: /prompt
+        PromptPut:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: PUT
+            Path: /prompt
+        PromptRollback:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: POST
+            Path: /prompt/rollback
+
+  # ── Lambda Conversations Manager — painel de conversas do Sergio ──────────
+  ConversationsManagerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub yorkshire-bot-conversations-manager-${Environment}
+      CodeUri: ../lambda/
+      Handler: conversations_manager.lambda_handler
+      Timeout: 15
+      Description: Lista conversas, histórico, takeover e release para o painel do Sergio
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConversationsTable
+      Events:
+        ConvList:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: GET
+            Path: /conversations
+        ConvGet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: GET
+            Path: /conversations/{phone}
+        ConvTakeover:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: POST
+            Path: /conversations/{phone}/takeover
+        ConvRelease:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: POST
+            Path: /conversations/{phone}/release
+        ConvStatus:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: PATCH
+            Path: /conversations/{phone}/status
+
   # ── Lambda Cost Explorer — custo mensal acumulado do bot ──────────────────
   CostExplorerFunction:
     Type: AWS::Serverless::Function
@@ -407,3 +507,14 @@ Outputs:
   BotCostApiUrl:
     Description: Endpoint custo mensal do bot (usar no painel-gestor)
     Value: !Sub https://${WebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/bot-cost
+
+  PromptApiUrl:
+    Description: Endpoint editor de prompt (GET/PUT/rollback)
+    Value: !Sub https://${WebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/prompt
+
+  PromptManagerFunctionArn:
+    Value: !GetAtt PromptManagerFunction.Arn
+
+  ConversationsApiUrl:
+    Description: Endpoint gerenciamento de conversas (painel Sergio)
+    Value: !Sub https://${WebhookApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/conversations
