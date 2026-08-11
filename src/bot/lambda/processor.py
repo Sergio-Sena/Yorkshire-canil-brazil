@@ -116,7 +116,7 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
         reason = response.get("reason", "")
         save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
         if _is_business_hours():
-            _notify_thiago(phone, lead, reason)
+            _notify_thiago(phone, lead, reason, history=conversation.get("history", []))
         else:
             save_pending_transfer(phone, lead, reason)
             schedule_followup(phone, followup_number=1)
@@ -187,14 +187,14 @@ def _handle_close(phone: str, lead: dict, conversation: dict):
     # 3. Notifica Thiago com resumo completo
     reason = f"FECHAMENTO | Preferência: {preference} | Estado: {state or '?'}"
     if _is_business_hours():
-        _notify_thiago(phone, merged_lead, reason)
+        _notify_thiago(phone, merged_lead, reason, history=conversation.get("history", []))
     else:
         save_pending_transfer(phone, merged_lead, reason)
         schedule_followup(phone, followup_number=1)
         logger.info(f"Fechamento fora do horário — agendado para 8h: {mask_phone(phone)}")
 
 
-def _notify_thiago(phone: str, lead: dict, reason: str):
+def _notify_thiago(phone: str, lead: dict, reason: str, history: list = None):
     """Notifica Thiago diretamente no WhatsApp — sem SNS."""
     if not THIAGO_PHONE:
         logger.warning("THIAGO_PHONE não configurado — notificação não enviada")
@@ -203,13 +203,27 @@ def _notify_thiago(phone: str, lead: dict, reason: str):
     name = lead.get("name", "Cliente")
     city = lead.get("city", "?")
     pref = lead.get("preference", "?")
+    payment = lead.get("payment", "indefinido")
+
+    # Resumo das últimas 6 mensagens da conversa
+    resumo = ""
+    if history:
+        ultimas = history[-6:]
+        linhas = []
+        for m in ultimas:
+            role = "Cliente" if m.get("role") == "user" else "Bella"
+            texto = (m.get("content") or "")[:120]
+            linhas.append(f"_{role}:_ {texto}")
+        resumo = "\n\n💬 *Últimas mensagens:*\n" + "\n".join(linhas)
 
     send_message(THIAGO_PHONE, (
         f"🔥 *Lead Yorkshire*\n"
         f"📱 https://wa.me/{phone}\n"
         f"👤 {name} — {city}\n"
         f"🐶 Preferência: {pref}\n"
+        f"💳 Pagamento: {payment}\n"
         f"📋 {reason}"
+        f"{resumo}"
     ))
     logger.info(f"Thiago notificado via WhatsApp: {mask_phone(phone)}")
 
