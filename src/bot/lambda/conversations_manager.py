@@ -57,13 +57,19 @@ def lambda_handler(event, context):
 
 def _list_conversations():
     try:
-        result = _table.scan(
-            FilterExpression="record_type = :conv OR record_type = :arch",
-            ExpressionAttributeValues={":conv": SK_CONV, ":arch": SK_ARCH},
-            ProjectionExpression="phone, record_type, lead_data, human_takeover, #st, turns, updated_at, archived_at",
-            ExpressionAttributeNames={"#st": "status"}
-        )
-        items = result.get("Items", [])
+        items = []
+        kwargs = {
+            "FilterExpression": "record_type = :conv OR record_type = :arch",
+            "ExpressionAttributeValues": {":conv": SK_CONV, ":arch": SK_ARCH},
+            "ProjectionExpression": "phone, record_type, lead_data, human_takeover, #st, turns, updated_at, archived_at",
+            "ExpressionAttributeNames": {"#st": "status"}
+        }
+        while True:
+            result = _table.scan(**kwargs)
+            items.extend(result.get("Items", []))
+            if "LastEvaluatedKey" not in result:
+                break
+            kwargs["ExclusiveStartKey"] = result["LastEvaluatedKey"]
         conversations = []
         for item in items:
             lead = item.get("lead_data", {})
