@@ -38,7 +38,7 @@
 - **Objetivo**: Substituir bot engessado (R$200/mês, opções 1/2/3) por bot com IA
 - **Infraestrutura**: AWS (roda em nuvem — não trava celular)
 - **Número bot**: `7657` — `5511960197657` (produção)
-- **Número suporte Sergio**: `5511982699176`
+- **Número suporte Sergio**: `5511984969596`
 - **Número testes**: `9596` (Sergio pessoal)
 - **Guardrail**: `l2sg39cfds01` versão 7 — tópicos: política, religião, concorrentes
 - **Preços**: por estado do cliente (`PRICE_TIER_BY_STATE`) — SP: R$3.949/R$4.949
@@ -53,16 +53,16 @@
 #### 🔧 Números WhatsApp
 | Número | Descrição |
 |--------|----------|
-| `5511982699176` | Número bot dev (Sergio) — `Phone Number ID: 1219655164565164` |
-| `5511984969596` | Número testes (Sergio pessoal) |
-| `5511960197657` | Número de produção do bot (Thiago) ✅ |
+| `5511984969596` | Número testes (Sergio pessoal `9596`) |
+| `5511977118201` | Número do Thiago `8201` — tráfego atual |
+| `5511960197657` | Número de produção do bot `7657` ✅ — destino final do tráfego |
 | Variável | Valor |
 |----------|-------|
-| `WHATSAPP_PHONE_ID` | `1219655164565164` |
+| `WHATSAPP_PHONE_ID` | `1209550188914168` |
 | `GUARDRAIL_ID` | `l2sg39cfds01` |
-| `GUARDRAIL_VERSION` | `5` |
+| `GUARDRAIL_VERSION` | `7` |
 | `DYNAMODB_TABLE` | `yorkshire-bot-conversations-dev` |
-| `THIAGO_PHONE` | `5511977119176` |
+| `THIAGO_PHONE` | `5511977118201` |
 | `BEDROCK_MODEL_ID` | `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
 
 ---
