@@ -1,6 +1,8 @@
 """
 bedrock.py — Integração Claude Sonnet via Amazon Bedrock
 Inclui: sanitização de injection, guardrails, anti-drift, sentiment guard, regras comerciais
+O system prompt é carregado do SSM Parameter Store em runtime.
+Fallback automático para o prompt hardcoded se SSM falhar.
 """
 
 import json
@@ -26,6 +28,31 @@ TZ = ZoneInfo(FOLLOWUP_TIMEZONE)
 logger = logging.getLogger()
 
 _bedrock = boto3.client("bedrock-runtime", region_name=AWS_REGION)
+_ssm     = boto3.client("ssm", region_name=AWS_REGION)
+
+SSM_PROMPT_ACTIVE = "/yorkshire-bot/prompt/active"
+_prompt_cache: dict = {}   # {"prompt": str, "ts": float} — TTL 5 min
+
+
+def _load_prompt_template() -> str | None:
+    """Carrega prompt do SSM com cache de 5 minutos. Retorna None se indisponível."""
+    import time
+    cached = _prompt_cache.get("prompt")
+    if cached and time.time() - _prompt_cache.get("ts", 0) < 300:
+        return cached
+    try:
+        resp = _ssm.get_parameter(Name=SSM_PROMPT_ACTIVE, WithDecryption=False)
+        prompt = resp["Parameter"]["Value"]
+        _prompt_cache["prompt"] = prompt
+        _prompt_cache["ts"]     = time.time()
+        logger.info("Prompt carregado do SSM")
+        return prompt
+    except _ssm.exceptions.ParameterNotFound:
+        logger.info("Prompt não encontrado no SSM — usando hardcoded")
+        return None
+    except Exception as e:
+        logger.warning(f"Falha ao carregar prompt do SSM: {e} — usando hardcoded")
+        return None
 
 # ── Respostas de fallback ─────────────────────────────────────────────────────
 
@@ -38,6 +65,9 @@ _FALLBACK_AGRESSIVE = "Entendo que pode estar frustrado. Estou aqui para ajudar 
 # ── System prompt ─────────────────────────────────────────────────────────────
 
 def _build_system_prompt(lead_data: dict) -> str:
+    """Monta o system prompt final injetando variáveis dinâmicas.
+    Tenta carregar template do SSM; se falhar usa o hardcoded abaixo.
+    """
     state     = lead_data.get("state", "")
     canil_loc = LOCATION_BY_CLIENT.get(state, LOCATION_BY_CLIENT["default"])
     price_tier = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
@@ -70,6 +100,24 @@ Agora é fora do horário comercial (21h–8h). Regras especiais:
   * NÃO diga que vai ligar ou mandar mensagem em horário específico além das 8h.
 - Nunca transfira para humano imediatamente fora do horário — ele não está disponível.
 """ if is_night else ""
+
+    # Tenta usar template do SSM; fallback para hardcoded
+    ssm_template = _load_prompt_template()
+    if ssm_template:
+        try:
+            return ssm_template.format(
+                canil_loc=canil_loc,
+                prices=prices,
+                PIX_DISCOUNT_MAX=PIX_DISCOUNT_MAX,
+                RESERVATION_DEPOSIT_PCT=RESERVATION_DEPOSIT_PCT,
+                installments_str=installments_str,
+                items_str=items_str,
+                MAX_TURNS=MAX_TURNS,
+                night_block=night_block,
+            )
+        except (KeyError, IndexError) as e:
+            logger.error(f"Erro ao formatar prompt do SSM: {e} — usando hardcoded como fallback")
+            _prompt_cache.clear()  # invalida cache para forçar reload na próxima
 
     return f"""Você é a assistente virtual do Yorkshire Canil Brazil, um dos maiores canais de Yorkshire Terrier do Brasil, campeão nacional e sul-americano.
 Seu nome é Bella. Você é calorosa, profissional e especialista em Yorkshire Terrier.
@@ -156,9 +204,11 @@ Responda SEMPRE em JSON válido com esta estrutura:
 }}
 - "media" e "reason" são opcionais — omita se não aplicável.
 - Use action "send_media" quando: cliente pedir para ver fotos ou aceitar ver fotos dos filhotes.
+  IMPORTANTE: Se o cliente fizer perguntas junto com o pedido de fotos (ex: "É micro?", "tem fotos dos pais?"), responda as perguntas NO campo "message" antes de enviar as fotos. Nunca ignore perguntas ao usar send_media.
   Exemplo de input → output:
   Cliente: "quero ver as fotos" → {{"action": "send_media", "message": "Olha que lindo(a)! 🐶", "lead_data": {{...}}}}
   Cliente: "sim, manda" → {{"action": "send_media", "message": "Veja as fotos! 😊", "lead_data": {{...}}}}
+  Cliente: "tem fotos dos pais??? É micro??" → {{"action": "send_media", "message": "Sobre o tamanho: nossos Yorkshires são pequenos e dentro do padrão ético da raça. Nomenclaturas como micro/mini não são reconhecidas oficialmente — cães abaixo de 1,8kg têm ossos frágeis e riscos genéticos. Nossos filhotes têm porte ideal! Quanto às fotos dos pais, temos sim! Olha que lindos os filhotes: 🐶", "lead_data": {{...}}}}
 - Use action "transfer" quando: cliente pedir humano, {MAX_TURNS} turns atingidos, cliente agitado (2ª vez), dúvida que não consegue responder.
 - Use action "close" quando: cliente confirmar que quer reservar/fechar.
 - Use action "archive" quando: cliente explicitamente desistir ou sumir após follow-up.

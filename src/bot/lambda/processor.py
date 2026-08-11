@@ -50,6 +50,11 @@ def _process(raw_body: dict):
 
     logger.info(f"Processando mensagem de {mask_phone(phone)}")
 
+    # Ignora mensagens do próprio Thiago (dono)
+    if phone == THIAGO_PHONE:
+        logger.info(f"Mensagem do Thiago ignorada: {mask_phone(phone)}")
+        return
+
     # Ignora mensagens automáticas do bot antigo (loop de encerramento)
     if "Por falta de resposta, estamos encerrando esse atendimento" in text:
         logger.info(f"Mensagem do bot antigo ignorada: {mask_phone(phone)}")
@@ -99,7 +104,7 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
 
     if action == "send_media":
         logger.info(f"Enviando galeria de fotos para {mask_phone(phone)} | preference: {lead.get('preference')}")
-        _send_media_gallery(phone, lead.get("preference", "indefinido"))
+        _send_media_gallery(phone, lead.get("preference", "indefinido"), first_caption=message or "Olha que lindo(a)! 🐶")
     elif media:
         send_message(phone, message, media=media)
     else:
@@ -135,7 +140,7 @@ def _is_business_hours() -> bool:
     return not (after_cutoff or before_morning)
 
 
-def _send_media_gallery(phone: str, preference: str) -> None:
+def _send_media_gallery(phone: str, preference: str, first_caption: str = "Olha que lindo(a)! 🐶") -> None:
     """Busca fotos do media.json no CloudFront e envia para o cliente."""
     try:
         with urllib.request.urlopen(MEDIA_JSON_URL, timeout=5) as resp:
@@ -151,7 +156,7 @@ def _send_media_gallery(phone: str, preference: str) -> None:
         return
 
     for i, foto in enumerate(fotos):
-        caption = "Olha que lindo(a)! 🐶" if i == 0 else ""
+        caption = first_caption if i == 0 else ""
         media = {"type": "image", "id": foto["id"]} if "id" in foto else {"type": "image", "url": foto["url"]}
         send_message(phone, caption, media=media)
 
