@@ -40,7 +40,7 @@ if (formLead) {
       `Olá! Meu nome é ${nome}, meu WhatsApp é ${whatsapp}. Gostaria de ser avisado(a) quando houver filhotes de Yorkshire disponíveis. Obrigado!`
     );
     if (typeof fbq !== "undefined") fbq("track", "Lead");
-    window.open(`https://wa.me/5511977118201?text=${msg}`, "_blank");
+    window.open(`https://wa.me/5511960197657?text=${msg}`, "_blank");
   });
 }
 
@@ -196,9 +196,9 @@ function lazyLoadVideos(container) {
     ? "Olá! Vi vocês no Google e tenho interesse em um filhote de Yorkshire."
     : "Olá! Encontrei vocês pelo site e tenho interesse em um filhote de Yorkshire.";
 
-  document.querySelectorAll('a[href*="wa.me/5511977118201"]').forEach((link) => {
+  document.querySelectorAll('a[href*="wa.me/5511960197657"]').forEach((link) => {
     if (!link.closest("#form-lead")) {
-      link.href = `https://wa.me/5511977118201?text=${encodeURIComponent(msg)}`;
+      link.href = `https://wa.me/5511960197657?text=${encodeURIComponent(msg)}`;
     }
   });
 })();
