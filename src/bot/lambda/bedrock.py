@@ -440,10 +440,21 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
 
     # Camada 3 — detecta estado antecipadamente para preço correto no system prompt
     detected_state = _detect_state(message, lead_data)
-    if detected_state and not lead_data.get("state"):
+    state_just_detected = detected_state and not lead_data.get("state")
+    if state_just_detected:
         lead_data = {**lead_data, "state": detected_state}
 
     system = _build_system_prompt(lead_data)
+
+    # Se estado foi detectado agora, força correção de preço no system prompt
+    if state_just_detected:
+        price_tier = PRICE_TIER_BY_STATE.get(detected_state, PRICE_TIER_BY_STATE["default"])
+        prices = PRICES[price_tier]
+        system += (
+            f"\n\n⚠️ CORREÇÃO IMPORTANTE: O estado do cliente acabou de ser identificado como {detected_state}. "
+            f"O preço correto é: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
+            f"Se você citou outro preço antes, corrija agora na sua resposta."
+        )
 
     # Camada 4 — chama Bedrock com guardrails
     try:
@@ -483,7 +494,10 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
         response["lead_data"]["injection_attempts"] = lead_data["injection_attempts"]
 
     # Forca send_media se cliente pediu fotos e Claude nao usou a action
-    if _FOTO_PATTERNS.search(message) and response.get("action") != "send_media":
+    _last_bot = next((e["content"] for e in reversed(history) if e.get("role") == "assistant"), "")
+    _foto_context = any(w in _last_bot.lower() for w in ["foto", "fotos", "imagem", "ver os filhotes", "quer ver"])
+    _confirmacao = re.match(r"^(sim|s|quero|manda|pode|vai|show|ok|isso|claro|com certeza)[!.\s]*$", message.strip(), re.IGNORECASE)
+    if ((_FOTO_PATTERNS.search(message) or (_foto_context and _confirmacao)) and response.get("action") != "send_media"):
         response["action"] = "send_media"
 
     return response
