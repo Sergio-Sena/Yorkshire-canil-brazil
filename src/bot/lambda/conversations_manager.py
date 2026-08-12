@@ -14,6 +14,7 @@ import boto3
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from config import AWS_REGION, DYNAMODB_TABLE
+from whatsapp import send_message
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -131,6 +132,12 @@ def _set_takeover(phone: str, takeover: bool):
                 ":ts": datetime.now(TZ).isoformat()
             }
         )
+        if takeover:
+            send_message(
+                phone,
+                "Olá! 🐾 Aqui é o Thiago, responsável pelo Yorkshire Canil Brazil. "
+                "Vou entrar em contato com você para continuar nossa conversa pessoalmente. Até já! 😊"
+            )
         action = "pausado" if takeover else "devolvido ao bot"
         logger.info(f"Bot {action} para {phone}")
         return _resp(200, {"ok": True, "phone": phone, "human_takeover": takeover})
