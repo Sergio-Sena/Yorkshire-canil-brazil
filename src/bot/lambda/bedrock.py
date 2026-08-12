@@ -451,9 +451,10 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
         price_tier = PRICE_TIER_BY_STATE.get(detected_state, PRICE_TIER_BY_STATE["default"])
         prices = PRICES[price_tier]
         system += (
-            f"\n\n⚠️ CORREÇÃO IMPORTANTE: O estado do cliente acabou de ser identificado como {detected_state}. "
-            f"O preço correto é: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
-            f"Se você citou outro preço antes, corrija agora na sua resposta."
+            f"\n\n⚠️ ATENÇÃO OBRIGATÓRIA: O estado do cliente é {detected_state}. "
+            f"O preço CORRETO e DEFINITIVO é: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
+            f"VOCÊ DEVE citar este preço agora nesta resposta, mesmo que já tenha mencionado outro valor antes. "
+            f"Se citou valor diferente anteriormente, corrija explicitamente: 'Deixa eu corrigir o valor para você'"
         )
 
     # Camada 4 — chama Bedrock com guardrails

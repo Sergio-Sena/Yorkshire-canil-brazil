@@ -112,10 +112,11 @@
 ## 🚧 Pendências
 
 - [ ] Restaurar acesso Admin do Sergio na conta Google Ads
+- [ ] Negativar keywords de adoção no Google Ads — "adoção", "adotar", "adote", "adoção de gato", "castração" gerando tráfego irrelevante. Lambda flagou "Canil Premiado" como falso positivo (contém "ado") — corrigir detecção também
 - [ ] Implementar tracking UTM no .com (Wix)
 - [ ] Melhorias landing page .com.br (deferido — aguarda .com.br virar página principal)
 - [ ] Investigar qualidade leads PMax
-- [ ] Perfil WhatsApp Business do 7657 (foto, nome, descrição) — [link Meta](https://business.facebook.com/latest/settings/whatsapp_account?business_id=882212698821548&nav_ref=bizweb_settings_asset_linkout&selected_asset_id=2508011329664874&selected_asset_type=whatsapp-business-account&detail_view_tab=PHONE_NUMBERS)
+- [x] Perfil WhatsApp Business do 7657 (foto, nome, descrição, site) — configurado em 12/08/2026
 - [ ] Painel do Thiago (SS-Gestao-de-Trafego) — próximo sprint
 
 ---
