@@ -104,7 +104,7 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
 
     if action == "send_media":
         logger.info(f"Enviando galeria de fotos para {mask_phone(phone)} | preference: {lead.get('preference')}")
-        _send_media_gallery(phone, lead.get("preference", "indefinido"), first_caption=message or "Olha que lindo(a)! 🐶")
+        sent_urls = _send_media_gallery(phone, lead.get("preference", "indefinido"), first_caption=message or "Olha que lindo(a)! 🐶")
     elif media:
         send_message(phone, message, media=media)
     else:
@@ -124,6 +124,8 @@ def _process_action(phone: str, response: dict, conversation: dict, message_in: 
     elif action == "archive":
         save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
         archive_lead(phone)
+    elif action == "send_media":
+        save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead, media_urls=sent_urls)
     else:
         save_conversation(phone, message_in=message_in, message_out=message, lead_data=lead)
 
@@ -140,25 +142,29 @@ def _is_business_hours() -> bool:
     return not (after_cutoff or before_morning)
 
 
-def _send_media_gallery(phone: str, preference: str, first_caption: str = "Olha que lindo(a)! 🐶") -> None:
-    """Busca fotos do media.json no CloudFront e envia para o cliente."""
+def _send_media_gallery(phone: str, preference: str, first_caption: str = "Olha que lindo(a)! 🐶") -> list:
+    """Busca fotos do media.json no CloudFront e envia para o cliente. Retorna lista de URLs enviadas."""
     try:
         with urllib.request.urlopen(MEDIA_JSON_URL, timeout=5) as resp:
             media_data = json.loads(resp.read())
     except Exception as e:
         logger.error(f"Erro ao carregar media.json: {e}")
         send_message(phone, "Vou pedir para o Thiago te enviar as fotos agora! 😊")
-        return
+        return []
 
     fotos = media_data.get(preference, []) or media_data.get("femea", [])
     if not fotos:
         send_message(phone, "Vou pedir para o Thiago te enviar as fotos agora! 😊")
-        return
+        return []
 
+    sent_urls = []
     for i, foto in enumerate(fotos):
         caption = first_caption if i == 0 else ""
         media = {"type": "image", "id": foto["id"]} if "id" in foto else {"type": "image", "url": foto["url"]}
         send_message(phone, caption, media=media)
+        if "url" in foto:
+            sent_urls.append(foto["url"])
+    return sent_urls
 
 
 def _handle_close(phone: str, lead: dict, conversation: dict):

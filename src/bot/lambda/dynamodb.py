@@ -80,7 +80,8 @@ def save_conversation(
     phone: str,
     message_in: str,
     message_out: str,
-    lead_data: dict | None = None
+    lead_data: dict | None = None,
+    media_urls: list | None = None
 ) -> None:
     """
     Atualiza histórico e lead_data da conversa ativa.
@@ -100,7 +101,10 @@ def save_conversation(
     if message_in:
         conv["history"].append({"role": "user",      "content": message_in,  "ts": _now()})
     if message_out:
-        conv["history"].append({"role": "assistant", "content": message_out, "ts": _now()})
+        entry = {"role": "assistant", "content": message_out, "ts": _now()}
+        if media_urls:
+            entry["media_urls"] = media_urls
+        conv["history"].append(entry)
 
     # Mantém histórico em no máximo 40 entradas (20 turns) para controlar tamanho do item
     conv["history"] = conv["history"][-40:]
