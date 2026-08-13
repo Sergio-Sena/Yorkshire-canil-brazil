@@ -168,10 +168,11 @@ def _send_message(phone: str, body: dict):
         history.append({"role": "assistant", "content": f"[{sent_by}] {text}", "ts": now})
         _table.update_item(
             Key={"phone": phone, "record_type": SK_CONV},
-            UpdateExpression="SET history = :h, updated_at = :ts",
+            UpdateExpression="SET history = :h, updated_at = :ts, was_attended = :wa",
             ExpressionAttributeValues={
                 ":h":  history,
                 ":ts": now,
+                ":wa": True,
             }
         )
         logger.info(f"Mensagem enviada por {sent_by} para {phone}")
