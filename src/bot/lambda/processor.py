@@ -208,10 +208,11 @@ def _notify_thiago(phone: str, lead: dict, reason: str, history: list = None):
         logger.warning("THIAGO_PHONE não configurado — notificação não enviada")
         return
 
-    name = lead.get("name", "Cliente")
-    city = lead.get("city", "?")
-    pref = lead.get("preference", "?")
+    name    = lead.get("name", "Cliente")
+    city    = lead.get("city", "?")
+    pref    = lead.get("preference", "?")
     payment = lead.get("payment", "indefinido")
+    now     = datetime.now(TZ).strftime("%d/%m/%Y %H:%M")
 
     # Resumo das últimas 6 mensagens da conversa
     resumo = ""
@@ -219,13 +220,14 @@ def _notify_thiago(phone: str, lead: dict, reason: str, history: list = None):
         ultimas = history[-6:]
         linhas = []
         for m in ultimas:
-            role = "Cliente" if m.get("role") == "user" else "Bella"
-            texto = (m.get("content") or "")[:120]
+            role  = "Cliente" if m.get("role") == "user" else "Bella"
+            texto = (m.get("content") or "")[:200]
             linhas.append(f"_{role}:_ {texto}")
         resumo = "\n\n💬 *Últimas mensagens:*\n" + "\n".join(linhas)
 
     send_message(THIAGO_PHONE, (
         f"🔥 *Lead Yorkshire*\n"
+        f"📅 {now}\n"
         f"📱 https://wa.me/{phone}\n"
         f"👤 {name} — {city}\n"
         f"🐶 Preferência: {pref}\n"
