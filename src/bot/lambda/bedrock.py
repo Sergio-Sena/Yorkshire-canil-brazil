@@ -134,19 +134,20 @@ Agora é fora do horário comercial (21h–8h). Regras especiais:
     ssm_template = _load_prompt_template()
     if ssm_template:
         try:
-            return ssm_template.format(
-                canil_loc=canil_loc,
-                prices=prices,
-                PIX_DISCOUNT_MAX=PIX_DISCOUNT_MAX,
-                RESERVATION_DEPOSIT_PCT=RESERVATION_DEPOSIT_PCT,
-                installments_str=installments_str,
-                items_str=items_str,
-                MAX_TURNS=MAX_TURNS,
-                night_block=night_block,
+            return (
+                ssm_template
+                .replace("{canil_loc}", canil_loc)
+                .replace("{prices}", str(prices))
+                .replace("{PIX_DISCOUNT_MAX}", str(PIX_DISCOUNT_MAX))
+                .replace("{RESERVATION_DEPOSIT_PCT}", str(RESERVATION_DEPOSIT_PCT))
+                .replace("{installments_str}", installments_str)
+                .replace("{items_str}", items_str)
+                .replace("{MAX_TURNS}", str(MAX_TURNS))
+                .replace("{night_block}", night_block)
             )
-        except (KeyError, IndexError) as e:
-            logger.error(f"Erro ao formatar prompt do SSM: {e} — usando hardcoded como fallback")
-            _prompt_cache.clear()  # invalida cache para forçar reload na próxima
+        except Exception as e:
+            logger.error(f"Erro ao formatar prompt do S3: {e} — usando hardcoded como fallback")
+            _prompt_cache.clear()
 
     return f"""Você é a assistente virtual do Yorkshire Canil Brazil, um dos maiores canais de Yorkshire Terrier do Brasil, campeão nacional e sul-americano.
 Seu nome é Bella. Você é calorosa, profissional e especialista em Yorkshire Terrier.
