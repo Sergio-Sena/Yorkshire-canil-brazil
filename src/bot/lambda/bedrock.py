@@ -562,7 +562,10 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
         }
 
     # Merge lead_data retornado pelo Claude com o existente
-    merged_lead = {**lead_data, **response.get("lead_data", {})}
+    # Campos já confirmados no DynamoDB não podem ser sobrescritos pelo Claude
+    claude_lead = response.get("lead_data", {})
+    protected = {k: v for k, v in lead_data.items() if v and k in ("name", "city", "state")}
+    merged_lead = {**lead_data, **claude_lead, **protected}
     response["lead_data"] = merged_lead
 
     # Guarda injection_attempts se existia
