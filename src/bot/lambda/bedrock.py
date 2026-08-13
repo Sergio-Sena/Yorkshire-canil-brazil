@@ -1,12 +1,12 @@
 """
 bedrock.py — Integração Claude Sonnet via Amazon Bedrock
 Inclui: sanitização de injection, guardrails, anti-drift, sentiment guard, regras comerciais
-O system prompt é carregado do SSM Parameter Store em runtime.
-Fallback automático para o prompt hardcoded se SSM falhar.
+O system prompt é carregado do S3 em runtime (fallback SSM → hardcoded).
 """
 
 import json
 import logging
+import os
 import re
 import boto3
 from botocore.exceptions import ClientError
@@ -28,24 +28,45 @@ TZ = ZoneInfo(FOLLOWUP_TIMEZONE)
 logger = logging.getLogger()
 
 _bedrock = boto3.client("bedrock-runtime", region_name=AWS_REGION)
-_ssm     = boto3.client("ssm", region_name=AWS_REGION)
+_s3      = boto3.client("s3",              region_name=AWS_REGION)
+_ssm     = boto3.client("ssm",             region_name=AWS_REGION)
 
+PROMPT_BUCKET     = os.environ.get("PROMPT_BUCKET", "")
+PROMPT_KEY_ACTIVE = os.environ.get("PROMPT_KEY_ACTIVE", "active/prompt.txt")
 SSM_PROMPT_ACTIVE = "/yorkshire-bot/prompt/active"
+
 _prompt_cache: dict = {}   # {"prompt": str, "ts": float} — TTL 5 min
 
 
 def _load_prompt_template() -> str | None:
-    """Carrega prompt do SSM com cache de 5 minutos. Retorna None se indisponível."""
+    """
+    Carrega prompt com cache de 5 minutos.
+    Ordem: S3 → SSM (fallback) → None (usa hardcoded).
+    """
     import time
     cached = _prompt_cache.get("prompt")
     if cached and time.time() - _prompt_cache.get("ts", 0) < 300:
         return cached
+
+    # Tenta S3 primeiro
+    if PROMPT_BUCKET:
+        try:
+            resp   = _s3.get_object(Bucket=PROMPT_BUCKET, Key=PROMPT_KEY_ACTIVE)
+            prompt = resp["Body"].read().decode("utf-8")
+            _prompt_cache["prompt"] = prompt
+            _prompt_cache["ts"]     = time.time()
+            logger.info(f"Prompt carregado do S3 | bucket={PROMPT_BUCKET} key={PROMPT_KEY_ACTIVE}")
+            return prompt
+        except Exception as e:
+            logger.warning(f"Falha ao carregar prompt do S3: {e} — tentando SSM")
+
+    # Fallback SSM (remover após validação em produção)
     try:
-        resp = _ssm.get_parameter(Name=SSM_PROMPT_ACTIVE, WithDecryption=False)
+        resp   = _ssm.get_parameter(Name=SSM_PROMPT_ACTIVE, WithDecryption=False)
         prompt = resp["Parameter"]["Value"]
         _prompt_cache["prompt"] = prompt
         _prompt_cache["ts"]     = time.time()
-        logger.info("Prompt carregado do SSM")
+        logger.info("Prompt carregado do SSM (fallback)")
         return prompt
     except _ssm.exceptions.ParameterNotFound:
         logger.info("Prompt não encontrado no SSM — usando hardcoded")
@@ -276,18 +297,32 @@ _CITY_STATE_MAP = {
     "taboão da serra": "SP", "taboao da serra": "SP", "taboão": "SP",
     "são caetano do sul": "SP", "sao caetano do sul": "SP", "são caetano": "SP",
     # Outros estados
-    "rio de janeiro": "RJ", "rj": "RJ", "niteroi": "RJ",
-    "belo horizonte": "MG", "mg": "MG", "uberlandia": "MG",
-    "curitiba": "PR", "pr": "PR", "londrina": "PR",
-    "porto alegre": "RS", "rs": "RS",
-    "florianopolis": "SC", "sc": "SC",
-    "goiania": "GO", "go": "GO",
+    "rio de janeiro": "RJ", "rj": "RJ", "niteroi": "RJ", "nova iguacu": "RJ", "duque de caxias": "RJ", "sao goncalo": "RJ",
+    "belo horizonte": "MG", "mg": "MG", "uberlandia": "MG", "contagem": "MG", "juiz de fora": "MG",
+    "curitiba": "PR", "pr": "PR", "londrina": "PR", "maringa": "PR", "ponta grossa": "PR",
+    "porto alegre": "RS", "rs": "RS", "caxias do sul": "RS", "pelotas": "RS",
+    "florianopolis": "SC", "sc": "SC", "joinville": "SC", "blumenau": "SC",
+    "goiania": "GO", "go": "GO", "aparecida de goiania": "GO",
     "brasilia": "DF", "df": "DF",
-    "salvador": "BA", "ba": "BA",
-    "recife": "PE", "pe": "PE",
-    "fortaleza": "CE", "ce": "CE",
+    "salvador": "BA", "ba": "BA", "feira de santana": "BA", "vitoria da conquista": "BA",
+    "recife": "PE", "pe": "PE", "caruaru": "PE", "olinda": "PE",
+    "fortaleza": "CE", "ce": "CE", "caucaia": "CE", "juazeiro do norte": "CE",
     "manaus": "AM", "am": "AM",
-    "belem": "PA", "pa": "PA",
+    "belem": "PA", "pa": "PA", "ananindeua": "PA",
+    "vitoria": "ES", "es": "ES", "vila velha": "ES", "serra": "ES", "cariacica": "ES",
+    "maceio": "AL", "al": "AL",
+    "natal": "RN", "rn": "RN", "mossoro": "RN",
+    "joao pessoa": "PB", "pb": "PB", "campina grande": "PB",
+    "aracaju": "SE", "se": "SE",
+    "teresina": "PI", "pi": "PI",
+    "sao luis": "MA", "ma": "MA", "imperatriz": "MA",
+    "porto velho": "RO", "ro": "RO",
+    "cuiaba": "MT", "mt": "MT",
+    "campo grande": "MS", "ms": "MS",
+    "macapa": "AP", "ap": "AP",
+    "boa vista": "RR", "rr": "RR",
+    "palmas": "TO", "to": "TO",
+    "rio branco": "AC", "ac": "AC",
 }
 
 
@@ -446,16 +481,30 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
 
     system = _build_system_prompt(lead_data)
 
-    # Se estado foi detectado agora, força correção de preço no system prompt
+    # Se estado foi detectado agora, reforça preço correto no system prompt
+    # Sem instrução de "correção" para evitar frase indevida em primeira apresentação
     if state_just_detected:
         price_tier = PRICE_TIER_BY_STATE.get(detected_state, PRICE_TIER_BY_STATE["default"])
-        prices = PRICES[price_tier]
-        system += (
-            f"\n\n⚠️ ATENÇÃO OBRIGATÓRIA: O estado do cliente é {detected_state}. "
-            f"O preço CORRETO e DEFINITIVO é: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
-            f"VOCÊ DEVE citar este preço agora nesta resposta, mesmo que já tenha mencionado outro valor antes. "
-            f"Se citou valor diferente anteriormente, corrija explicitamente: 'Deixa eu corrigir o valor para você'"
+        prices     = PRICES[price_tier]
+        already_quoted = any(
+            str(prices["macho"]) in (e.get("content") or "")
+            or str(prices["femea"]) in (e.get("content") or "")
+            for e in history if e.get("role") == "assistant"
         )
+        if already_quoted:
+            # Preço já foi apresentado corretamente — só reforça silenciosamente
+            system += (
+                f"\n\n⚠️ Estado do cliente: {detected_state}. "
+                f"Preço correto: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
+                f"Use este valor se precisar mencionar preço novamente."
+            )
+        else:
+            # Primeira vez apresentando preço — não mencionar correção
+            system += (
+                f"\n\n⚠️ Estado do cliente: {detected_state}. "
+                f"Apresente o preço correto: Macho R${prices['macho']:,} / Fêmea R${prices['femea']:,} (frete incluso). "
+                f"NÃO use frases como 'deixa eu corrigir' — é a primeira apresentação."
+            )
 
     # Camada 4 — chama Bedrock com guardrails
     try:

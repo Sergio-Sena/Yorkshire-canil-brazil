@@ -164,6 +164,8 @@ def _send_media_gallery(phone: str, preference: str, first_caption: str = "Olha 
         send_message(phone, caption, media=media)
         if "url" in foto:
             sent_urls.append(foto["url"])
+        if i < len(fotos) - 1:
+            time.sleep(0.8)
     return sent_urls
 
 
