@@ -14,7 +14,7 @@ from config import (
     AWS_REGION, BEDROCK_MODEL_ID, GUARDRAIL_ID, GUARDRAIL_VERSION,
     INJECTION_PATTERNS, MAX_INJECTION_ATTEMPTS, MAX_MESSAGE_LENGTH,
     PRICES, PIX_DISCOUNT_MAX, INSTALLMENTS, RESERVATION_DEPOSIT_PCT,
-    INCLUDED_ITEMS, LOCATION_BY_CLIENT, PRICE_TIER_BY_STATE, MAX_TURNS,
+    INCLUDED_ITEMS, LOCATION_BY_CLIENT, PRICE_TIER_BY_STATE, GRANDE_SP_CITIES, MAX_TURNS,
     BUSINESS_HOURS_START, NIGHT_MODE_START_HOUR, NIGHT_MODE_START_MINUTE, FOLLOWUP_TIMEZONE,
     FORCE_NIGHT_MODE
 )
@@ -85,13 +85,21 @@ _FALLBACK_AGRESSIVE = "Entendo que pode estar frustrado. Estou aqui para ajudar 
 
 # ── System prompt ─────────────────────────────────────────────────────────────
 
+def _get_price_tier(state: str, city: str) -> str:
+    """Determina o tier de preço baseado no estado e cidade."""
+    if state == "SP":
+        return "grande_sp" if city.lower() in GRANDE_SP_CITIES else "interior_sp"
+    return PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
+
+
 def _build_system_prompt(lead_data: dict) -> str:
     """Monta o system prompt final injetando variáveis dinâmicas.
     Tenta carregar template do SSM; se falhar usa o hardcoded abaixo.
     """
     state     = lead_data.get("state", "")
+    city      = lead_data.get("city", "").lower()
     canil_loc = LOCATION_BY_CLIENT.get(state, LOCATION_BY_CLIENT["default"])
-    price_tier = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
+    price_tier = _get_price_tier(state, city)
     prices     = PRICES[price_tier]
     if FORCE_NIGHT_MODE:
         is_night = True
@@ -336,6 +344,22 @@ def _detect_state(message: str, lead_data: dict) -> str:
             return state
     return ""
 
+
+def _detect_city(message: str, lead_data: dict) -> str:
+    """Detecta cidade do cliente na mensagem para refinar tier de preço."""
+    if lead_data.get("city"):
+        return lead_data["city"]
+    text = message.lower()
+    # Verifica cidades da Grande SP primeiro (tier mais específico)
+    for city in GRANDE_SP_CITIES:
+        if city in text:
+            return city
+    # Verifica demais cidades do mapa
+    for keyword in _CITY_STATE_MAP:
+        if keyword in text:
+            return keyword
+    return ""
+
 def _sanitize(text: str, phone: str = "", attempts: int = 0) -> tuple[str, bool]:
     """
     Verifica padrões de injection/jailbreak e limite de tamanho.
@@ -475,16 +499,18 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
 
     # Camada 3 — detecta estado antecipadamente para preço correto no system prompt
     detected_state = _detect_state(message, lead_data)
+    detected_city  = _detect_city(message, lead_data)
     state_just_detected = detected_state and not lead_data.get("state")
     if state_just_detected:
         lead_data = {**lead_data, "state": detected_state}
+    if detected_city and not lead_data.get("city"):
+        lead_data = {**lead_data, "city": detected_city}
 
     system = _build_system_prompt(lead_data)
 
     # Se estado foi detectado agora, reforça preço correto no system prompt
-    # Sem instrução de "correção" para evitar frase indevida em primeira apresentação
     if state_just_detected:
-        price_tier = PRICE_TIER_BY_STATE.get(detected_state, PRICE_TIER_BY_STATE["default"])
+        price_tier = _get_price_tier(detected_state, lead_data.get("city", ""))
         prices     = PRICES[price_tier]
         already_quoted = any(
             str(prices["macho"]) in (e.get("content") or "")
