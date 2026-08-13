@@ -170,29 +170,17 @@ def _send_media_gallery(phone: str, preference: str, first_caption: str = "Olha 
 
 
 def _handle_close(phone: str, lead: dict, conversation: dict):
-    """Fluxo completo de fechamento: confirma cliente, pausa IA, notifica Thiago."""
+    """Fluxo completo de fechamento: pausa IA e notifica Thiago."""
     from config import PRICES, PRICE_TIER_BY_STATE, RESERVATION_DEPOSIT_PCT
 
-    # Calcula valor do sinal
-    state      = lead.get("state", "")
-    tier       = PRICE_TIER_BY_STATE.get(state, PRICE_TIER_BY_STATE["default"])
-    preference = lead.get("preference", "indefinido")
-    preco      = PRICES[tier].get(preference, PRICES[tier]["macho"])
-    sinal      = int(preco * RESERVATION_DEPOSIT_PCT)
-
-    # 1. Mensagem de confirmacao para o cliente
-    send_message(phone, (
-        f"Perfeito! Seu interesse está registrado. 🐾\n"
-        f"O Thiago vai entrar em contato em breve para finalizar os detalhes "
-        f"e garantir seu filhote. Qualquer dúvida, é só chamar!"
-    ))
-
-    # 2. Pausa a IA nessa conversa (igual ao human_takeover)
+    # 1. Pausa a IA nessa conversa
     merged_lead = {**lead, "human_takeover": True, "status": "fechado"}
     save_conversation(phone, message_in="", message_out="[FECHAMENTO]", lead_data=merged_lead)
     logger.info(f"Conversa pausada após fechamento | phone={mask_phone(phone)}")
 
-    # 3. Notifica Thiago com resumo completo
+    # 2. Notifica Thiago com resumo completo
+    state      = lead.get("state", "")
+    preference = lead.get("preference", "indefinido")
     reason = f"FECHAMENTO | Preferência: {preference} | Estado: {state or '?'}"
     if _is_business_hours():
         _notify_thiago(phone, merged_lead, reason, history=conversation.get("history", []))
