@@ -11,7 +11,7 @@ import time
 import urllib.request
 import urllib.error
 from config import (
-    WHATSAPP_TOKEN, WHATSAPP_API_URL,
+    WHATSAPP_TOKEN, WHATSAPP_PHONE_ID,
     WHATSAPP_APP_SECRET, TYPING_DELAY_MIN, TYPING_DELAY_MAX
 )
 
@@ -140,9 +140,11 @@ def _build_media_payload(phone: str, caption: str, media: dict) -> dict:
 
 def _post(payload: dict) -> bool:
     data = json.dumps(payload).encode("utf-8")
+    api_url = f"https://graph.facebook.com/v19.0/{WHATSAPP_PHONE_ID}/messages"
     logger.info(f"WhatsApp payload: {json.dumps(payload)[:300]}")
+    logger.info(f"WhatsApp API URL: {api_url}")
     req = urllib.request.Request(
-        WHATSAPP_API_URL,
+        api_url,
         data=data,
         headers={
             "Authorization": f"Bearer {WHATSAPP_TOKEN}",

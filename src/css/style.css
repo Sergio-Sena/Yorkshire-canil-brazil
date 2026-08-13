@@ -896,6 +896,11 @@ details p {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
+details .btn-primary {
+  margin: 0 0 var(--spacing-sm) 1.5rem;
+  font-size: 0.85rem;
+}
+
 /* ===== BLOG ===== */
 .blog-grid {
   display: grid;

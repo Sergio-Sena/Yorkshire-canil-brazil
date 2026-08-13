@@ -79,6 +79,9 @@ Globals:
         WEBHOOK_VERIFY_TOKEN: !Ref WebhookVerifyToken
         THIAGO_PHONE:         !Ref ThiagoPhone
         SERGIO_PHONE:         !Ref SergioPhone
+        PROMPT_BUCKET:        !Ref PromptBucket
+        PROMPT_KEY_ACTIVE:    active/prompt.txt
+        PROMPT_KEY_BACKUP:    backup/prompt.txt
 
 # ── Resources ─────────────────────────────────────────────────────────────────
 Resources:
@@ -146,6 +149,11 @@ Resources:
                 - ssm:GetParameter
               Resource:
                 - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yorkshire-bot/prompt/*
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+              Resource:
+                - !Sub arn:aws:s3:::${PromptBucket}/active/*
       Events:
         SQSTrigger:
           Type: SQS
@@ -364,6 +372,15 @@ Resources:
                 - ssm:PutParameter
               Resource:
                 - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yorkshire-bot/prompt/*
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:ListBucketVersions
+                - s3:GetObjectVersion
+              Resource:
+                - !Sub arn:aws:s3:::${PromptBucket}
+                - !Sub arn:aws:s3:::${PromptBucket}/*
       Events:
         PromptGet:
           Type: HttpApi
@@ -427,6 +444,12 @@ Resources:
             ApiId: !Ref WebhookApi
             Method: PATCH
             Path: /conversations/{phone}/status
+        ConvSend:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref WebhookApi
+            Method: POST
+            Path: /conversations/{phone}/send
 
   # ── Lambda Cost Explorer — custo mensal acumulado do bot ──────────────────
   CostExplorerFunction:
@@ -449,6 +472,37 @@ Resources:
             ApiId: !Ref WebhookApi
             Method: GET
             Path: /bot-cost
+
+  # ── S3 Bucket — armazenamento do prompt com versionamento ─────────────────
+  PromptBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub yorkshire-bot-prompts-${Environment}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: archive-old-versions
+            Status: Enabled
+            NoncurrentVersionTransitions:
+              - TransitionInDays: 30
+                StorageClass: GLACIER_IR
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 90
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: yorkshire-bot
+        - Key: Client
+          Value: yorkshire-canil-brazil
+        - Key: Env
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: ss-technologies
 
   # ── CloudWatch Alarm — DLQ com mensagem = problema crítico ───────────────
   DLQAlarm:
@@ -514,6 +568,14 @@ Outputs:
 
   PromptManagerFunctionArn:
     Value: !GetAtt PromptManagerFunction.Arn
+
+  PromptBucketName:
+    Description: Bucket S3 para armazenamento do prompt com versionamento
+    Value: !Ref PromptBucket
+
+  PromptBucketArn:
+    Description: ARN do bucket de prompts
+    Value: !GetAtt PromptBucket.Arn
 
   ConversationsApiUrl:
     Description: Endpoint gerenciamento de conversas (painel Sergio)
