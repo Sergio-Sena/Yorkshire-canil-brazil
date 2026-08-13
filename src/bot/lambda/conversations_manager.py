@@ -51,6 +51,10 @@ def lambda_handler(event, context):
         body = _parse_body(event)
         return _update_status(_extract_phone(path, "/status"), body)
 
+    if method == "POST" and path.endswith("/send"):
+        body = _parse_body(event)
+        return _send_message(_extract_phone(path, "/send"), body)
+
     return _resp(404, {"error": "Rota não encontrada"})
 
 
@@ -126,10 +130,11 @@ def _set_takeover(phone: str, takeover: bool):
     try:
         _table.update_item(
             Key={"phone": phone, "record_type": SK_CONV},
-            UpdateExpression="SET human_takeover = :v, updated_at = :ts",
+            UpdateExpression="SET human_takeover = :v, updated_at = :ts" + (", was_attended = :wa" if takeover else ""),
             ExpressionAttributeValues={
                 ":v":  takeover,
-                ":ts": datetime.now(TZ).isoformat()
+                ":ts": datetime.now(TZ).isoformat(),
+                **({":wa": True} if takeover else {})
             }
         )
         if takeover:
@@ -143,6 +148,36 @@ def _set_takeover(phone: str, takeover: bool):
         return _resp(200, {"ok": True, "phone": phone, "human_takeover": takeover})
     except Exception as e:
         logger.error(f"Erro ao setar takeover {phone}: {e}")
+        return _resp(500, {"error": str(e)})
+
+
+def _send_message(phone: str, body: dict):
+    if not phone:
+        return _resp(400, {"error": "phone obrigatório"})
+    text       = (body.get("message") or "").strip()
+    sent_by    = body.get("sent_by", "humano")
+    if not text:
+        return _resp(400, {"error": "Campo 'message' obrigatório"})
+    try:
+        send_message(phone, text)
+        now = datetime.now(TZ).isoformat()
+        # Salva no histórico como mensagem do assistente
+        resp = _table.get_item(Key={"phone": phone, "record_type": SK_CONV})
+        item = resp.get("Item", {})
+        history = item.get("history", [])
+        history.append({"role": "assistant", "content": f"[{sent_by}] {text}", "ts": now})
+        _table.update_item(
+            Key={"phone": phone, "record_type": SK_CONV},
+            UpdateExpression="SET history = :h, updated_at = :ts",
+            ExpressionAttributeValues={
+                ":h":  history,
+                ":ts": now,
+            }
+        )
+        logger.info(f"Mensagem enviada por {sent_by} para {phone}")
+        return _resp(200, {"ok": True, "sent_at": now})
+    except Exception as e:
+        logger.error(f"Erro ao enviar mensagem para {phone}: {e}")
         return _resp(500, {"error": str(e)})
 
 
