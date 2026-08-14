@@ -154,6 +154,24 @@ def test_followup_survives_archive():
     assert "followup_ts" in resp["Item"]
 
 
+# ── save_conversation com status e human_takeover no nível raiz ──────────────
+
+@mock_aws
+def test_save_conversation_status_at_root():
+    _create_table(boto3.resource("dynamodb", region_name="us-east-1"))
+    import importlib, dynamodb as db
+    importlib.reload(db)
+
+    db.save_conversation("5511999", "", "[FECHAMENTO]", lead_data={"name": "João"},
+                         status="fechado", human_takeover=True)
+    conv = db.get_conversation("5511999")
+
+    assert conv["status"] == "fechado"
+    assert conv["human_takeover"] is True
+    assert "status" not in conv.get("lead_data", {})
+    assert "human_takeover" not in conv.get("lead_data", {})
+
+
 # ── pending_transfer ──────────────────────────────────────────────────────────
 
 @mock_aws
