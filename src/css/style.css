@@ -926,6 +926,7 @@ details .btn-primary {
 .blog-grid {
   display: grid;
   gap: var(--spacing-md);
+  grid-template-columns: 1fr;
 }
 
 .blog-card {
@@ -944,24 +945,40 @@ details .btn-primary {
   box-shadow: var(--shadow-xl);
 }
 
-.blog-card h3 a {
-  color: var(--color-primary);
-  font-size: 0.85rem;
+.blog-card h2 a {
+  color: var(--color-accent);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.4;
 }
 
-.blog-card h3 a:hover {
-  color: var(--color-accent);
+.blog-card h2 a:hover {
+  color: var(--color-primary);
 }
 
 .blog-card p {
   color: var(--color-text-light);
   margin: var(--spacing-xs) 0;
+  font-size: 0.95rem;
 }
 
 .blog-card time {
-  font-size: 0.85rem;
+  display: block;
+  font-size: 0.8rem;
   color: var(--color-text-light);
   opacity: 0.7;
+  margin-bottom: var(--spacing-xs);
+}
+
+.blog-card .blog-read-more {
+  display: inline-block;
+  margin-top: var(--spacing-xs);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.blog-card .blog-read-more:hover {
+  color: var(--color-accent-hover);
 }
 
 /* ===== CONTATO ===== */
@@ -1177,7 +1194,6 @@ footer {
 .blog-post h1 {
   margin-bottom: var(--spacing-xs);
   font-size: clamp(1.1rem, 3vw, 1.8rem);
-  white-space: nowrap;
 }
 
 .blog-post time {
@@ -1230,10 +1246,6 @@ footer {
 /* Desktop (1024px+) */
 @media (width >= 1024px) {
   .depoimentos-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .blog-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
