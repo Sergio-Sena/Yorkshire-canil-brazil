@@ -174,8 +174,8 @@ def _handle_close(phone: str, lead: dict, conversation: dict):
     from config import PRICES, PRICE_TIER_BY_STATE, RESERVATION_DEPOSIT_PCT
 
     # 1. Pausa a IA nessa conversa
-    merged_lead = {**lead, "human_takeover": True, "status": "fechado"}
-    save_conversation(phone, message_in="", message_out="[FECHAMENTO]", lead_data=merged_lead)
+    save_conversation(phone, message_in="", message_out="[FECHAMENTO]", lead_data=lead,
+                      status="fechado", human_takeover=True)
     logger.info(f"Conversa pausada após fechamento | phone={mask_phone(phone)}")
 
     # 2. Notifica Thiago com resumo completo
@@ -183,9 +183,9 @@ def _handle_close(phone: str, lead: dict, conversation: dict):
     preference = lead.get("preference", "indefinido")
     reason = f"FECHAMENTO | Preferência: {preference} | Estado: {state or '?'}"
     if _is_business_hours():
-        _notify_thiago(phone, merged_lead, reason, history=conversation.get("history", []))
+        _notify_thiago(phone, lead, reason, history=conversation.get("history", []))
     else:
-        save_pending_transfer(phone, merged_lead, reason)
+        save_pending_transfer(phone, lead, reason)
         schedule_followup(phone, followup_number=1)
         logger.info(f"Fechamento fora do horário — agendado para 8h: {mask_phone(phone)}")
 
@@ -236,9 +236,7 @@ def _is_owner_message(body: dict) -> bool:
 
 
 def _mark_human_takeover(phone: str):
-    conversation = get_conversation(phone) or {}
-    save_conversation(phone, message_in="", message_out="[HUMAN_TAKEOVER]",
-                      lead_data={**conversation.get("lead_data", {}), "human_takeover": True})
+    save_conversation(phone, message_in="", message_out="[HUMAN_TAKEOVER]", human_takeover=True)
     logger.info(f"IA pausada — Thiago assumiu {mask_phone(phone)}")
 
 

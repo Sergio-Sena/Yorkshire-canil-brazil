@@ -81,7 +81,9 @@ def save_conversation(
     message_in: str,
     message_out: str,
     lead_data: dict | None = None,
-    media_urls: list | None = None
+    media_urls: list | None = None,
+    status: str | None = None,
+    human_takeover: bool | None = None
 ) -> None:
     """
     Atualiza histórico e lead_data da conversa ativa.
@@ -111,6 +113,10 @@ def save_conversation(
 
     if lead_data:
         conv["lead_data"] = {**conv.get("lead_data", {}), **lead_data}
+    if status is not None:
+        conv["status"] = status
+    if human_takeover is not None:
+        conv["human_takeover"] = human_takeover
 
     conv["turns"]      = conv.get("turns", 0) + (1 if message_in else 0)
     conv["updated_at"] = _now()
