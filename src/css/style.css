@@ -298,10 +298,17 @@ h3 {
 
 .numero-item strong {
   display: block;
-  font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+  font-size: clamp(1.1rem, 3.5vw, 2.5rem);
   color: var(--color-accent);
   font-weight: 800;
   white-space: nowrap;
+}
+
+@media (width <= 480px) {
+  .numero-item strong {
+    font-size: clamp(1rem, 5vw, 1.4rem);
+    white-space: normal;
+  }
 }
 
 .numero-item span {
