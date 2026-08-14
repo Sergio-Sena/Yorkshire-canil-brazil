@@ -16,12 +16,24 @@ src/bot/*.zip
 src/bot/response*.json
 src/bot/test-payload*.json
 src/bot/.aws-sam/
+src/bot/infra/.aws-sam/
 src/bot/media/*.jpg
 src/bot/media/*.png
 src/bot/media/*.webp
+
+# Bot — logs e arquivos de debug
+src/bot/lambda/logs_*.txt
+src/bot/lambda/response-*.json
+src/bot/lambda/prompt_export.txt
+src/bot/lambda/update_env.py
+test_send.py
+
+# SAM
+samconfig.toml
 
 # Arquivos locais temporários
 .vscode/
 hist*.txt
 historico*.txt
 out.json
+*.csv
