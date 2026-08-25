@@ -58,5 +58,13 @@
 5. ⏳ **Pausar/eliminar campanha Wix** — Thiago autorizou em 11/08/2026
 6. ⏳ **Redirecionar R$ 6.000/mês** exclusivamente para o site novo (yorkshirecanilbrazil.com.br)
 
+### Custo Bedrock — PRIORIDADE ALTA
+7. 🔴 **Trocar Claude Sonnet 4.5 → Haiku 3.5** — custo atual ~$490/mês, estimativa com Haiku ~$40/mês (12x mais barato)
+   - Ver `src/bot/lambda/bedrock.py` — trocar `BEDROCK_MODEL_ID`
+   - Ajustar prompt caching para persistir entre Lambda instances
+   - Histórico já limitado a 40 entradas (ok)
+   - Dados: cacheWrite ~2400-2800 tokens por nova instance, input cresce por turn
+   - Cost Explorer 01-14/ago: Claude Sonnet 4.5 = $229, Bedrock geral = $23
+
 ### Monitoramento
-7. ⏳ **Quality Score** — aguardar ~7 dias após mudanças SEO para medir impacto
+8. ⏳ **Quality Score** — aguardar ~7 dias após mudanças SEO para medir impacto
