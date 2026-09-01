@@ -7,12 +7,14 @@
     { "src": "videos/famosos/famoso-celso-russomano-01.mp4", "nome": "Celso Russomano", "poster": "images/posters/famoso-celso-russomano-01.webp" },
     { "src": "videos/famosos/famoso-celso-russomano-02.mp4", "nome": "Celso Russomano", "poster": "images/posters/famoso-celso-russomano-02.webp" },
     { "src": "videos/famosos/famoso-fabio-junior.mp4", "nome": "Fábio Junior", "poster": "images/posters/famoso-fabio-junior.webp" },
+    { "src": "videos/famosos/famoso-sidnei-magal.mp4", "nome": "Sidnei Magal", "poster": "images/posters/famoso-sidnei-magal.webp" },
     { "src": "videos/famosos/famoso-fernanda-vasconcelos.mp4", "nome": "Fernanda Vasconcelos", "poster": "images/posters/famoso-fernanda-vasconcelos.webp" },
     { "src": "videos/famosos/famoso-hulk-magrelo.mp4", "nome": "Hulk Magrelo", "poster": "images/posters/famoso-hulk-magrelo.webp" },
     { "src": "videos/famosos/famoso-evandro-santos.mp4", "nome": "Evandro Santos", "poster": "images/posters/famoso-evandro-santos.webp" },
     { "src": "videos/famosos/famoso-tales-coutinho.mp4", "nome": "Tales Coutinho", "poster": "images/posters/famoso-tales-coutinho.webp" },
     { "src": "videos/famosos/famoso-isacfarias.mp4", "nome": "Isac Farias", "poster": "images/posters/famoso-isacfarias.webp" },
-    { "src": "videos/famosos/famoso-renatto-vencancio.mp4", "nome": "Renatto Vencancio", "poster": "images/posters/famoso-renatto-vencancio.webp" }
+    { "src": "videos/famosos/famoso-renatto-vencancio.mp4", "nome": "Renatto Vencancio", "poster": "images/posters/famoso-renatto-vencancio.webp" },
+    { "src": "videos/famosos/famoso-dionizio-santos.mp4", "nome": "Dionizio Santos", "poster": "images/posters/famoso-dionizio-santos.webp" }
   ],
   "emocoes": [
     { "src": "videos/emocoes-reais/campanha-01.mp4", "poster": "images/posters/campanha-01.webp" },

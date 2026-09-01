@@ -15,7 +15,7 @@ DYNAMODB_TABLE = os.getenv("DYNAMODB_TABLE", "yorkshire-bot-conversations")
 SNS_TOPIC_ARN = os.getenv("SNS_TOPIC_ARN", "")
 # fila FIFO — webhook → processor
 SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL", "")
-BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "anthropic.claude-sonnet-4-5")
+BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "us.anthropic.claude-haiku-4-5-20251001-v1:0")
 
 # ── WhatsApp ──────────────────────────────────────────────────────────────────
 WHATSAPP_TOKEN       = os.getenv("WHATSAPP_TOKEN", "")
