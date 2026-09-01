@@ -1339,6 +1339,26 @@ footer {
     width: calc(100vw - 3.5rem);
     min-width: unset;
     max-width: 320px;
+    scroll-snap-align: center;
+  }
+
+  .carousel:has(.video-item) {
+    padding: 0;
+  }
+
+  .carousel:has(.video-item) .carousel-track {
+    padding: 0 1.75rem;
+    scroll-padding-inline: 1.75rem;
+  }
+
+  .carousel:has(.video-item) .carousel-btn-prev {
+    left: 0;
+    z-index: 20;
+  }
+
+  .carousel:has(.video-item) .carousel-btn-next {
+    right: 0;
+    z-index: 20;
   }
 
   #filhotes h2,
