@@ -1247,6 +1247,13 @@ footer {
   margin-bottom: var(--spacing-xs);
 }
 
+.blog-post video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+}
+
 .blog-post a:last-of-type {
   margin-top: var(--spacing-md);
 }
