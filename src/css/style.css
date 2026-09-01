@@ -1330,10 +1330,15 @@ footer {
     gap: 0;
   }
 
-  .carousel-track .filhote-card,
-  .carousel-track .video-item {
+  .carousel-track .filhote-card {
     width: 100%;
     min-width: 100%;
+  }
+
+  .carousel-track .video-item {
+    width: calc(100vw - 3.5rem);
+    min-width: unset;
+    max-width: 320px;
   }
 
   #filhotes h2,
