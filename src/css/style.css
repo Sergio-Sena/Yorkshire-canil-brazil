@@ -550,6 +550,10 @@ h3 {
   max-width: none;
 }
 
+#titulos-videos-grid .carousel-track .video-item video {
+  aspect-ratio: 9 / 16;
+}
+
 @media (width >= 768px) {
   #titulos-videos-grid {
     max-width: 680px;
