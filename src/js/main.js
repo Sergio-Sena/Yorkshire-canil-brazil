@@ -63,6 +63,7 @@ reveals.forEach((el) => {
 
 // Dynamic media loader with carousel
 async function loadMedia() {
+  if (!document.getElementById("famosos-grid") && !document.getElementById("emocoes-grid") && !document.getElementById("titulos-videos-grid")) return;
   try {
     const res = await fetch("data/media.json");
     const data = await res.json();

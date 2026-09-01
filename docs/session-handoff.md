@@ -6,20 +6,59 @@
 
 ## Último Deploy
 
-**Commits:**
-- `6674e2c` — seo: schema LocalBusiness + PetStore
-- `1d616c4` — fix: status e human_takeover no nível raiz da conversa, não dentro de lead_data
-- `dd48392` — test: valida status e human_takeover no nível raiz da conversa
+### O que foi feito nesta sessão (data atual):
 
-### O que foi feito nesta sessão:
-- **Rich Results Test** — 6 itens válidos: LocalBusiness+PetStore, Organização, 4 Snippets de avaliação ✅
-- **Schema.org** — `@type: ["LocalBusiness", "PetStore"]` no index.html
-- **Bug fix DynamoDB** — `status` e `human_takeover` agora salvos no nível raiz da conversa, não dentro de `lead_data`
-- **`save_conversation`** — aceita parâmetros opcionais `status` e `human_takeover`
-- **`_mark_human_takeover`** — simplificado, sem buscar conversa desnecessariamente
-- **Deduplicação** — confirmada correta: `handler.py` + SQS FIFO com `MessageDeduplicationId`
-- **DynamoDB scan** — sem status antigos (`interessado`, `em_contato`), item do handoff era falso alarme
-- **Testes** — 22 passando (novo: `test_save_conversation_status_at_root`)
+**Landing Page — Ajustes visuais e de conteúdo**
+- Título da seção famosos: "Famosos que Já Passaram por Aqui" → "ALGUNS FAMOSOS"
+- 2 novos vídeos adicionados à seção famosos: `famoso-sidnei-magal.mp4` e `famoso-dionizio-santos.mp4`
+  - Sidnei Magal inserido após Fábio Junior (por relevância)
+  - Dionizio Santos inserido no final
+  - Posters gerados via `scripts/generate-posters.js` (ffmpeg em `C:\ffmpeg\bin\ffmpeg.exe`)
+- Seção `#filhotes` — texto atualizado: incluso pedigree, microchip, vacina e vermifugo. Entrega para todo o Brasil.
+- FAQ entrega atualizado para alinhar com novo texto
+- Cards de títulos (🏆🏆📜) em linha única no mobile — `repeat(3, 1fr)` sempre
+- Animação pulse nas setas do carrossel (`:active` → `scale(1.2)` em 200ms)
+  - `-webkit-tap-highlight-color: transparent` e `touch-action: manipulation` para iOS/Safari
+- Correção do erro 404 `data/media.json` nas páginas do blog — `loadMedia()` retorna cedo se nenhum grid existir
+
+**Blog — 2 novos posts com vídeo**
+- `adotar-ou-comprar-cachorro.html` — Vlog1, data 2026-01-10
+- `como-proteger-cachorro-furtos.html` — Vlog2, data 2026-07-10
+- Posters dos vlogs gerados: `blog-vlog1.webp` (576x1024) e `blog-vlog2.webp` (1024x576)
+- Datas dos 4 posts existentes atualizadas (1 por ano retroativo):
+  - Quanto Custa Yorkshire → 2025-01-10
+  - Como Escolher Canil → 2024-01-10
+  - Temperamento Yorkshire → 2023-01-10
+  - Como Cuidar Filhote → 2022-01-10
+- `blog/index.html` atualizado com 6 cards em ordem decrescente
+
+---
+
+### O que foi feito na sessão anterior (25/ago/2026):
+
+**Troca de modelo Bedrock — Sonnet 4.5 → Haiku 4.5**
+- Custo agosto: ~$229 Sonnet 4.5 (~R$ 2.200) — 10x acima do orçado
+- Modelo trocado via env var: `us.anthropic.claude-haiku-4-5-20251001-v1:0`
+- `config.py` atualizado com novo default
+- Projeção setembro: ~$20-25 (~R$ 120-150)
+
+**Prompt otimizado para Haiku**
+- Backup do prompt anterior em `s3://.../backup/prompt.txt`
+- 3 ajustes aplicados: JSON obrigatório reforçado, conhecimento técnico condensado, exemplos de preço por região (R1/R2/R3)
+- Testado: Guarulhos (R1), Campinas (R2), Curitiba (R3) — todos passando ✅
+
+**Lambda de custo corrigida (`yorkshire-bot-cost-dev`)**
+- Bedrock não aceita tags de recurso — não aparecia no card
+- Nova lógica: Bedrock por dimensão de serviço + demais por tag `Project=yorkshire-bot`
+- Card agora mostra valor real: ~$24 em agosto (com Bedrock)
+
+**AWS Support case aberto**
+- Pedido de goodwill credit para $229 do Sonnet 4.5
+- Texto salvo em `docs/aws-support-case.md`
+- Categoria: Other billing questions
+
+**Mensagem redigida para o Thiago**
+- Explicação transparente do erro, correção e pedido de contribuição parcial no custo de agosto
 
 ---
 
@@ -58,13 +97,12 @@
 5. ⏳ **Pausar/eliminar campanha Wix** — Thiago autorizou em 11/08/2026
 6. ⏳ **Redirecionar R$ 6.000/mês** exclusivamente para o site novo (yorkshirecanilbrazil.com.br)
 
-### Custo Bedrock — PRIORIDADE ALTA
-7. 🔴 **Trocar Claude Sonnet 4.5 → Haiku 3.5** — custo atual ~$490/mês, estimativa com Haiku ~$40/mês (12x mais barato)
-   - Ver `src/bot/lambda/bedrock.py` — trocar `BEDROCK_MODEL_ID`
-   - Ajustar prompt caching para persistir entre Lambda instances
-   - Histórico já limitado a 40 entradas (ok)
-   - Dados: cacheWrite ~2400-2800 tokens por nova instance, input cresce por turn
-   - Cost Explorer 01-14/ago: Claude Sonnet 4.5 = $229, Bedrock geral = $23
+### Custo Bedrock — RESOLVIDO ✅
+7. ~~🔴 **Trocar Claude Sonnet 4.5 → Haiku 4.5**~~ — feito em 25/ago/2026
+   - Modelo: `us.anthropic.claude-haiku-4-5-20251001-v1:0`
+   - Prompt otimizado e testado
+   - Card de custo corrigido (Bedrock agora aparece)
+   - AWS Support case aberto para goodwill credit
+   - Mensagem redigida para o Thiago
 
-### Monitoramento
-8. ⏳ **Quality Score** — aguardar ~7 dias após mudanças SEO para medir impacto
+### Próxima Sessão — Tarefas em Ordem
