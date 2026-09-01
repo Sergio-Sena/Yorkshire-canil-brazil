@@ -144,14 +144,17 @@ function renderCarousel(container, items, type) {
   wrapper.appendChild(btnNext);
   container.appendChild(wrapper);
 
-  const scrollAmount = track.querySelector(".filhote-card, .video-item")?.offsetWidth + 16 || 300;
+  function getScrollAmount() {
+    const item = track.querySelector(".filhote-card, .video-item");
+    return item ? item.offsetWidth + parseInt(getComputedStyle(track).gap || 16) : 300;
+  }
 
   btnPrev.addEventListener("click", () => {
-    track.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+    track.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
   });
 
   btnNext.addEventListener("click", () => {
-    track.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    track.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
   });
 
   track.addEventListener("scroll", () => {
