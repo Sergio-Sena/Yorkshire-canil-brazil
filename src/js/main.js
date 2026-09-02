@@ -74,27 +74,22 @@ async function loadMedia() {
 
 
     if (titulosVideosGrid && data.titulosVideos) {
-      renderCarousel(titulosVideosGrid, data.titulosVideos, "video");
-      lazyLoadVideos(titulosVideosGrid);
+      renderVideoSection(titulosVideosGrid, data.titulosVideos, "9/16");
     }
 
     if (famososGrid && data.famosos) {
-      renderCarousel(famososGrid, data.famosos, "video");
-      lazyLoadVideos(famososGrid);
+      renderVideoSection(famososGrid, data.famosos, "16/9");
     }
 
     if (emocoesGrid && data.emocoes) {
-      renderCarousel(emocoesGrid, data.emocoes, "video");
-      lazyLoadVideos(emocoesGrid);
+      renderVideoSection(emocoesGrid, data.emocoes, "16/9");
 
       const btnVerTodos = document.getElementById("btn-ver-todos-emocoes");
       if (btnVerTodos && data.emocoesExtras) {
         btnVerTodos.addEventListener("click", () => {
-          const track = emocoesGrid.querySelector(".carousel-track");
-          data.emocoesExtras.forEach(item => {
-            track.innerHTML += `<div class="video-item"><video controls preload="none" data-src="${item.src}"></video></div>`;
-          });
-          lazyLoadVideos(emocoesGrid);
+          const allItems = [...data.emocoes, ...data.emocoesExtras];
+          emocoesGrid.innerHTML = "";
+          renderVideoSection(emocoesGrid, allItems, "16/9");
           btnVerTodos.remove();
         });
       }
@@ -104,7 +99,7 @@ async function loadMedia() {
   }
 }
 
-function renderCarousel(container, items, type) {
+function renderCarousel(container, items) {
   const wrapper = document.createElement("div");
   wrapper.className = "carousel";
 
@@ -112,21 +107,13 @@ function renderCarousel(container, items, type) {
   track.className = "carousel-track";
 
   items.forEach(item => {
-    if (type === "filhote") {
-      track.innerHTML += `<div class="filhote-card">
-        <img src="${item.src}" alt="${item.nome}" loading="lazy" width="280" height="280" />
-        <div class="filhote-info">
-          <h3>${item.nome}</h3>
-          <p>${item.info}</p>
-        </div>
-      </div>`;
-    } else {
-      const posterAttr = item.poster ? ` poster="${item.poster}"` : "";
-      track.innerHTML += `<div class="video-item">
-        <video controls preload="metadata" data-src="${item.src}"${posterAttr}>
-        </video>
-      </div>`;
-    }
+    track.innerHTML += `<div class="filhote-card">
+      <img src="${item.src}" alt="${item.nome}" loading="lazy" width="280" height="280" />
+      <div class="filhote-info">
+        <h3>${item.nome}</h3>
+        <p>${item.info}</p>
+      </div>
+    </div>`;
   });
 
   const btnPrev = document.createElement("button");
@@ -145,7 +132,7 @@ function renderCarousel(container, items, type) {
   container.appendChild(wrapper);
 
   function getScrollAmount() {
-    const item = track.querySelector(".filhote-card, .video-item");
+    const item = track.querySelector(".filhote-card");
     return item ? item.offsetWidth + parseInt(getComputedStyle(track).gap || 16) : 300;
   }
 
@@ -162,9 +149,49 @@ function renderCarousel(container, items, type) {
     btnNext.style.opacity = track.scrollLeft < track.scrollWidth - track.clientWidth - 10 ? "1" : "0";
   });
 
-  // Initial state
   btnPrev.style.opacity = "0";
   btnNext.style.opacity = items.length > 3 ? "1" : "0";
+}
+
+function renderVideoSection(container, items, aspect) {
+  const first = items[0];
+  const wrapper = document.createElement("div");
+  wrapper.className = "video-section";
+
+  const player = document.createElement("video");
+  player.className = "video-section-player";
+  player.controls = true;
+  player.preload = "metadata";
+  player.style.aspectRatio = aspect;
+  if (first.poster) player.poster = first.poster;
+  player.src = first.src;
+
+  const thumbTrack = document.createElement("div");
+  thumbTrack.className = "video-section-thumbs";
+
+  items.forEach((item, i) => {
+    const thumb = document.createElement("button");
+    thumb.className = "video-section-thumb" + (i === 0 ? " active" : "");
+    thumb.setAttribute("aria-label", item.nome || `Vídeo ${i + 1}`);
+    if (item.poster) {
+      thumb.style.backgroundImage = `url('${item.poster}')`;
+    }
+    thumb.addEventListener("click", () => {
+      player.pause();
+      player.src = item.src;
+      if (item.poster) player.poster = item.poster;
+      else player.removeAttribute("poster");
+      player.load();
+      player.play();
+      thumbTrack.querySelectorAll(".video-section-thumb").forEach(t => t.classList.remove("active"));
+      thumb.classList.add("active");
+    });
+    thumbTrack.appendChild(thumb);
+  });
+
+  wrapper.appendChild(player);
+  if (items.length > 1) wrapper.appendChild(thumbTrack);
+  container.appendChild(wrapper);
 }
 
 loadMedia();

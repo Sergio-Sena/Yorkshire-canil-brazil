@@ -540,32 +540,6 @@ h3 {
 
 #titulos-videos-grid {
   margin-bottom: var(--spacing-md);
-  max-width: 360px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-#titulos-videos-grid .carousel-track .video-item {
-  width: 100%;
-  max-width: none;
-}
-
-#titulos-videos-grid .carousel-track .video-item video {
-  aspect-ratio: 9 / 16;
-}
-
-@media (width >= 768px) {
-  #titulos-videos-grid {
-    max-width: 680px;
-  }
-
-  #titulos-videos-grid .carousel-track {
-    justify-content: center;
-  }
-
-  #titulos-videos-grid .carousel-track .video-item {
-    width: 320px;
-  }
 }
 
 
@@ -738,6 +712,65 @@ h3 {
 
 #famosos, #emocoes {
   text-align: center;
+}
+
+#famosos-grid,
+#emocoes-grid {
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== VIDEO SECTION (player + thumbs) ===== */
+.video-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.video-section-player {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: #000;
+  display: block;
+}
+
+.video-section-thumbs {
+  display: flex;
+  gap: var(--spacing-xs);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.video-section-thumb {
+  width: 72px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  background-color: var(--color-glass);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition), border-color var(--transition);
+  flex-shrink: 0;
+}
+
+.video-section-thumb.active,
+.video-section-thumb:hover {
+  opacity: 1;
+  border-color: var(--color-accent);
+}
+
+#titulos-videos-grid .video-section {
+  max-width: 320px;
+}
+
+#titulos-videos-grid .video-section-thumb {
+  width: 48px;
+  height: 72px;
 }
 
 .ver-mais {
@@ -1333,32 +1366,6 @@ footer {
   .carousel-track .filhote-card {
     width: 100%;
     min-width: 100%;
-  }
-
-  .carousel-track .video-item {
-    width: calc(100vw - 3.5rem);
-    min-width: unset;
-    max-width: 320px;
-    scroll-snap-align: center;
-  }
-
-  .carousel:has(.video-item) {
-    padding: 0;
-  }
-
-  .carousel:has(.video-item) .carousel-track {
-    padding: 0 1.75rem;
-    scroll-padding-inline: 1.75rem;
-  }
-
-  .carousel:has(.video-item) .carousel-btn-prev {
-    left: 0;
-    z-index: 20;
-  }
-
-  .carousel:has(.video-item) .carousel-btn-next {
-    right: 0;
-    z-index: 20;
   }
 
   #filhotes h2,
