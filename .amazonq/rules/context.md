@@ -44,17 +44,26 @@ Leia este arquivo antes de implementar qualquer mudança neste projeto.
 ## Prompt da Bella (bot)
 
 - **Nome do bot:** Bella
-- **Preços:** Macho R$3.949 / Fêmea R$4.949 — ÚNICOS para todo o Brasil
-- **Frete:** incluso para qualquer cidade, incluindo toda a Grande SP
+- **Modelo:** Haiku 4.5 (`us.anthropic.claude-haiku-4-5-20251001-v1:0`)
+- **Prompt:** armazenado no S3 com versionamento (6 versões) — rollback via `POST /prompt/rollback`
+- **Frete:** incluso em todas as regiões, entrega pessoal
 - **Desconto PIX:** até R$300 adicional (progressivo)
 - **Parcelamento:** 1x-3x sem juros | 4x-7x +10% | 8x +11% | 9x +12% | 10x +13% | 11x +14% | 12x +15%
-- **Limite SSM:** 8.192 chars — manter prompt abaixo de 7.500 chars para ter margem
+
+### Preços por região (ancoragem de/por)
+| Região | Macho | Fêmea |
+|---|---|---|
+| SP capital + Grande SP | de R$4.949 por R$3.949 | de R$5.949 por R$4.949 |
+| Interior SP | de R$6.449 por R$5.449 | de R$7.449 por R$6.449 |
+| Outros estados | de R$7.990 por R$6.990 | de R$8.990 por R$7.990 |
 
 ### Regras críticas do prompt:
-- NUNCA ajustar preço por região — preço é único nacional
-- NUNCA mencionar custo extra de frete para nenhuma cidade
-- NÃO avançar para preço sem ter o nome do cliente
+- Preço determinado pela cidade — perguntar sempre antes de apresentar valor
+- Ancoragem de/por é intencional (técnica de vendas)
+- NUNCA mencionar endereço exato do canil (localização declarada: Minas Gerais)
+- NÃO avançar para preço sem ter nome + cidade + preferência
 - Após enviar foto (send_media), SEMPRE incluir pergunta de avanço no "message"
+- Fechamento (action `close`) SOMENTE com confirmação explícita do cliente
 
 ---
 
@@ -118,7 +127,15 @@ Referência: https://github.com/kylezantos/design-principles
 
 ## Roadmap / Pendências
 
-- [ ] Migrar prompt para S3 (eliminar limite de 8.192 chars do SSM)
-- [ ] Implementar estrutura de preços por região (Thiago/GOB)
-- [ ] Sentry no frontend dos painéis
+### Bot
+- [ ] Testar pagamento, parcelamento, entrega e objeções
+- [ ] Verificar token WhatsApp (erro 400 nos logs — pode estar expirado)
 - [ ] Testes unitários nos Lambdas críticos (processor, bedrock)
+- [ ] Sentry no frontend dos painéis
+
+### Landing page
+- [ ] Validar `renderVideoSection` no celular real
+- [ ] Remover `lazyLoadVideos` (função morta no `main.js`)
+- [ ] Logo definitiva, fotos reais, depoimentos reais
+- [ ] Deploy final (Cloudflare Pages + domínio) + ativar SEO
+- [ ] Configurar GA4 + Meta Pixel
