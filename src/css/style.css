@@ -764,6 +764,48 @@ h3 {
   border-color: var(--color-accent);
 }
 
+.video-section-thumb-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.video-section-thumb-label {
+  width: 72px;
+  overflow: hidden;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--color-white);
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--color-accent-hover), var(--color-accent));
+  border-radius: 4px;
+  padding: 3px 6px;
+  box-shadow: 0 2px 6px rgb(5 150 105 / 35%);
+}
+
+.video-section-thumb-label span {
+  display: inline-block;
+  animation: marquee-scroll 8s linear infinite;
+}
+
+.video-section-thumb-wrapper:hover .video-section-thumb-label span,
+.video-section-thumb-wrapper:focus-within .video-section-thumb-label span {
+  animation-play-state: paused;
+}
+
+.video-section-thumb-wrapper:hover .video-section-thumb,
+.video-section-thumb-wrapper:focus-within .video-section-thumb {
+  border-color: var(--color-accent);
+  opacity: 1;
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
 #titulos-videos-grid .video-section {
   max-width: 320px;
 }

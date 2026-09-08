@@ -173,9 +173,7 @@ function renderVideoSection(container, items, aspect) {
     const thumb = document.createElement("button");
     thumb.className = "video-section-thumb" + (i === 0 ? " active" : "");
     thumb.setAttribute("aria-label", item.nome || `Vídeo ${i + 1}`);
-    if (item.poster) {
-      thumb.style.backgroundImage = `url('${item.poster}')`;
-    }
+    if (item.poster) thumb.style.backgroundImage = `url('${item.poster}')`;
     thumb.addEventListener("click", () => {
       player.pause();
       player.src = item.src;
@@ -186,7 +184,19 @@ function renderVideoSection(container, items, aspect) {
       thumbTrack.querySelectorAll(".video-section-thumb").forEach(t => t.classList.remove("active"));
       thumb.classList.add("active");
     });
-    thumbTrack.appendChild(thumb);
+    if (item.nome) {
+      const thumbWrapper = document.createElement("div");
+      thumbWrapper.className = "video-section-thumb-wrapper";
+      thumbWrapper.appendChild(thumb);
+      const label = document.createElement("div");
+      label.className = "video-section-thumb-label";
+      const text = item.profissao ? `${item.nome} • ${item.profissao}` : item.nome;
+      label.innerHTML = `<span>${text}</span>`;
+      thumbWrapper.appendChild(label);
+      thumbTrack.appendChild(thumbWrapper);
+    } else {
+      thumbTrack.appendChild(thumb);
+    }
   });
 
   wrapper.appendChild(player);
