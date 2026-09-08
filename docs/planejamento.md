@@ -107,6 +107,11 @@ Para dar continuidade ao projeto, os seguintes passos são recomendados:
 - [ ] **Áudio WhatsApp** — Claude Sonnet 4.5 aceita áudio nativo via Bedrock (zero Transcribe/S3)
 - [ ] Testar cenários: objeção de preço, parcelamento, PIX, transfer para Thiago, modo noturno, injection, guardrail
 
+### Landing Page — Melhorias Recentes ✅
+- Travessões `—` substituídos por pontuação natural em todos os HTMLs (`index.html`, `quanto-custa-yorkshire-terrier.html`, `como-proteger-cachorro-furtos.html`)
+- Seção Famosos: nomes corrigidos (`Celso Russomanno`, `Sidney Magal`, `Fernanda Vasconcellos`, `Evandro Santo`, `Dionísio Freitas`) e campo `profissao` adicionado no `media.json`
+- Thumbnails dos famosos: scrolling text com `Nome • Profissão`, caixa com gradiente verde, texto branco e sombra — padrão visual do site
+
 ### Sprint 3 — RAG + Painel de Controle
 - [ ] **Tags AWS** em todos os recursos (`projeto=yorkshire-bot`, `env=prod`, `cliente=yorkshire-canil-brazil`)
 - [ ] **AWS Cost Explorer** com filtro por tag — custo real do bot por mês
