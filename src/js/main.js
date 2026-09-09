@@ -158,6 +158,9 @@ function renderVideoSection(container, items, aspect) {
   const wrapper = document.createElement("div");
   wrapper.className = "video-section";
 
+  // Player com fade
+  const playerWrap = document.createElement("div");
+  playerWrap.className = "video-section-player-wrap";
   const player = document.createElement("video");
   player.className = "video-section-player";
   player.controls = true;
@@ -165,6 +168,19 @@ function renderVideoSection(container, items, aspect) {
   player.style.aspectRatio = aspect;
   if (first.poster) player.poster = first.poster;
   player.src = first.src;
+  playerWrap.appendChild(player);
+
+  // CTA contextual (só para famosos)
+  const hasCta = items.some(i => i.nome);
+  if (hasCta) {
+    const cta = document.createElement("a");
+    cta.className = "video-section-cta btn-primary";
+    cta.target = "_blank";
+    cta.rel = "noopener";
+    cta.textContent = "🐾 Quero um filhote como o deles";
+    cta.href = `https://wa.me/5511977118201?text=${encodeURIComponent("Olá! Vi os vídeos dos famosos no site e quero saber mais sobre os filhotes disponíveis!")}`;
+    playerWrap.appendChild(cta);
+  }
 
   const thumbTrack = document.createElement("div");
   thumbTrack.className = "video-section-thumbs";
@@ -174,16 +190,23 @@ function renderVideoSection(container, items, aspect) {
     thumb.className = "video-section-thumb" + (i === 0 ? " active" : "");
     thumb.setAttribute("aria-label", item.nome || `Vídeo ${i + 1}`);
     if (item.poster) thumb.style.backgroundImage = `url('${item.poster}')`;
+
     thumb.addEventListener("click", () => {
-      player.pause();
-      player.src = item.src;
-      if (item.poster) player.poster = item.poster;
-      else player.removeAttribute("poster");
-      player.load();
-      player.play();
+      // Fade out
+      player.classList.add("fading");
+      setTimeout(() => {
+        player.pause();
+        player.src = item.src;
+        if (item.poster) player.poster = item.poster;
+        else player.removeAttribute("poster");
+        player.load();
+        player.play();
+        player.classList.remove("fading");
+      }, 200);
       thumbTrack.querySelectorAll(".video-section-thumb").forEach(t => t.classList.remove("active"));
       thumb.classList.add("active");
     });
+
     if (item.nome) {
       const thumbWrapper = document.createElement("div");
       thumbWrapper.className = "video-section-thumb-wrapper";
@@ -199,7 +222,7 @@ function renderVideoSection(container, items, aspect) {
     }
   });
 
-  wrapper.appendChild(player);
+  wrapper.appendChild(playerWrap);
   if (items.length > 1) wrapper.appendChild(thumbTrack);
   container.appendChild(wrapper);
 }
