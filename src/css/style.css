@@ -771,6 +771,7 @@ h3 {
   opacity: 0.6;
   transition: opacity var(--transition), border-color var(--transition);
   flex-shrink: 0;
+
   /* area de toque minima 44px ja garantida pela altura */
 }
 
