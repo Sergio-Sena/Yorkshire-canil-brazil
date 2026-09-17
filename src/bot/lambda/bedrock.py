@@ -33,6 +33,7 @@ _ssm     = boto3.client("ssm",             region_name=AWS_REGION)
 
 PROMPT_BUCKET     = os.environ.get("PROMPT_BUCKET", "")
 PROMPT_KEY_ACTIVE = os.environ.get("PROMPT_KEY_ACTIVE", "active/prompt.txt")
+PROMPT_KEY_BACKUP = os.environ.get("PROMPT_KEY_BACKUP", "backup/prompt.txt")
 SSM_PROMPT_ACTIVE = "/yorkshire-bot/prompt/active"
 
 _prompt_cache: dict = {}   # {"prompt": str, "ts": float} — TTL 5 min
@@ -48,7 +49,7 @@ def _load_prompt_template() -> str | None:
     if cached and time.time() - _prompt_cache.get("ts", 0) < 300:
         return cached
 
-    # Tenta S3 primeiro
+    # Tenta S3 ativo primeiro
     if PROMPT_BUCKET:
         try:
             resp   = _s3.get_object(Bucket=PROMPT_BUCKET, Key=PROMPT_KEY_ACTIVE)
@@ -58,7 +59,18 @@ def _load_prompt_template() -> str | None:
             logger.info(f"Prompt carregado do S3 | bucket={PROMPT_BUCKET} key={PROMPT_KEY_ACTIVE}")
             return prompt
         except Exception as e:
-            logger.warning(f"Falha ao carregar prompt do S3: {e} — tentando SSM")
+            logger.warning(f"Falha ao carregar prompt ativo do S3: {e} — tentando backup S3")
+
+        # Fallback: backup do S3
+        try:
+            resp   = _s3.get_object(Bucket=PROMPT_BUCKET, Key=PROMPT_KEY_BACKUP)
+            prompt = resp["Body"].read().decode("utf-8")
+            _prompt_cache["prompt"] = prompt
+            _prompt_cache["ts"]     = time.time()
+            logger.warning(f"Prompt carregado do BACKUP S3 | key={PROMPT_KEY_BACKUP}")
+            return prompt
+        except Exception as e:
+            logger.warning(f"Falha ao carregar backup do S3: {e} — tentando SSM")
 
     # Fallback SSM (remover após validação em produção)
     try:
@@ -441,6 +453,59 @@ def _call_bedrock(system: str, messages: list) -> str:
 
 # ── Parser da resposta ────────────────────────────────────────────────────────
 
+# ── Correção server-side de parcelamento ─────────────────────────────────────
+
+_INSTALLMENT_RE = re.compile(r"(\d{1,2})x", re.IGNORECASE)
+
+
+def _fix_installment_message(message: str, lead_data: dict) -> str:
+    """
+    Se a mensagem menciona parcelamento (ex: '12x'), recalcula server-side
+    e substitui qualquer valor que o LLM tenha calculado.
+    """
+    match = _INSTALLMENT_RE.search(message)
+    if not match:
+        return message
+
+    n = int(match.group(1))
+    if n < 1 or n > 12:
+        return message
+
+    state      = lead_data.get("state", "")
+    city       = lead_data.get("city", "").lower()
+    preference = lead_data.get("preference", "indefinido")
+    tier       = _get_price_tier(state, city)
+    prices     = PRICES[tier]
+
+    if preference == "macho":
+        base = prices["macho"]
+    elif preference == "femea":
+        base = prices["femea"]
+    else:
+        return message  # sem preferência definida — não corrige
+
+    rate    = INSTALLMENTS.get(n, 0.0)
+    total   = round(base * (1 + rate), 2)
+    parcela = round(total / n, 2)
+
+    def fmt(v):
+        return f"R${v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+    juros_str = "sem juros" if rate == 0 else f"com juros"
+    correto   = f"{n}x de {fmt(parcela)} {juros_str}"
+
+    # Substitui o trecho com valor parcelado calculado pelo LLM
+    message = re.sub(
+        r"\d{1,2}x[^\n]*?R\$[\d\.]+(?:,\d{2})?[^\n]*?(?:/m[êe]s|por m[êe]s|mensais?)?[^\n]*",
+        correto,
+        message,
+        flags=re.IGNORECASE
+    )
+
+    logger.info(f"Parcelamento corrigido server-side: {n}x | base={base} rate={rate} parcela={parcela}")
+    return message
+
+
 def _parse_response(raw: str) -> dict:
     """Extrai JSON da resposta do Claude. Fallback para reply genérico se inválido."""
     try:
@@ -579,5 +644,9 @@ def generate_response(phone: str, message: str, history: list, lead_data: dict) 
     _confirmacao = re.match(r"^(sim|s|quero|manda|pode|vai|show|ok|isso|claro|com certeza)[!.\s]*$", message.strip(), re.IGNORECASE)
     if ((_FOTO_PATTERNS.search(message) or (_foto_context and _confirmacao)) and response.get("action") != "send_media"):
         response["action"] = "send_media"
+
+    # Corrige cálculo de parcelamento server-side (LLMs erram matemática)
+    if response.get("message"):
+        response["message"] = _fix_installment_message(response["message"], response["lead_data"])
 
     return response

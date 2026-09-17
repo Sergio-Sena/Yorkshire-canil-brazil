@@ -111,6 +111,10 @@ Para dar continuidade ao projeto, os seguintes passos são recomendados:
 - Travessões `—` substituídos por pontuação natural em todos os HTMLs (`index.html`, `quanto-custa-yorkshire-terrier.html`, `como-proteger-cachorro-furtos.html`)
 - Seção Famosos: nomes corrigidos (`Celso Russomanno`, `Sidney Magal`, `Fernanda Vasconcellos`, `Evandro Santo`, `Dionísio Freitas`) e campo `profissao` adicionado no `media.json`
 - Thumbnails dos famosos: scrolling text com `Nome • Profissão`, caixa com gradiente verde, texto branco e sombra — padrão visual do site
+- Novo post blog (16/09/2026): `joao-kleber-val-marttini-yorkshire.html` — vídeo + foto da Rede TV, palavras-chave SEO adicionadas (João Kléber Show, Val Marttini, Thiago Bueno, Rei dos Yorkshires)
+- `blockquote` estilizado no `style.css` — borda verde, fundo alt, texto em destaque
+- Posts antigos corrigidos: `<time>` vazia preenchida e `&#9742;` substituído por `🐾` nos CTAs de `como-escolher-canil-yorkshire-confiavel.html`, `yorkshire-terrier-temperamento-personalidade.html` e `como-cuidar-filhote-yorkshire.html`
+- `blog/index.html` e `feed.xml` atualizados com o novo post no topo
 
 ### Sprint 3 — RAG + Painel de Controle
 - [ ] **Tags AWS** em todos os recursos (`projeto=yorkshire-bot`, `env=prod`, `cliente=yorkshire-canil-brazil`)
