@@ -229,25 +229,6 @@ function renderVideoSection(container, items, aspect) {
 
 loadMedia();
 
-// Lazy load videos only when visible
-function lazyLoadVideos(container) {
-  const videos = container.querySelectorAll("video[data-src]");
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const video = entry.target;
-        const src = video.getAttribute("data-src");
-        video.innerHTML = `<source src="${src}" type="video/mp4">`;
-        video.removeAttribute("data-src");
-        video.load();
-        observer.unobserve(video);
-      }
-    });
-  }, { rootMargin: "200px" });
-
-  videos.forEach((video) => observer.observe(video));
-}
-
 // WhatsApp UTM tracking — identifica origem do lead
 (function () {
   const params = new URLSearchParams(window.location.search);
