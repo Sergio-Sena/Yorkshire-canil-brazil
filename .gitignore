@@ -37,3 +37,8 @@ hist*.txt
 historico*.txt
 out.json
 *.csv
+controlU.txt
+prompt-atual.txt
+response.json
+src/bot/lambda/response.txt
+src/bot/lambda/response_cost.json
