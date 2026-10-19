@@ -141,3 +141,17 @@
 | `historico-campanhas.md` | Histórico de decisões |
 | `Infra.md` | Infraestrutura AWS |
 | `saas-chatbot-visao.md` | Visão de produto SaaS multi-cliente |
+
+---
+
+## 🤖 GEO / Indexação — 16/10/2026 (via Kiro)
+
+Correções de GEO e indexação no site `yorkshirecanilbrazil.com.br`:
+
+- **Bug `og:title` corrigido** — a tag estava escrita `<metav>` (erro de digitação), então o título Open Graph não era lido ao compartilhar. Corrigido para `<meta>`.
+- **JSON-LD FAQPage corrigido** — a última pergunta ("Vocês trabalham com outras raças?") estava com o texto embaralhado/corrompido (`"Não.hamos com outras raças."` + fragmentos no campo errado), o que invalidava o bloco. Reconstruído; os dois blocos JSON-LD agora fazem parse válido e o rich result de FAQ volta a ser elegível.
+- **`llms.txt` criado** (`src/llms.txt`) — resumo em Markdown (sobre, diferenciais, FAQ, contato) para consumo por LLMs.
+- **`build.js` atualizado** — passou a copiar `llms.txt` para o `dist/` (antes a lista de estáticos só tinha robots/sitemap/manifest).
+- **Base de GEO já existente** (mantida): `robots.txt`, `sitemap.xml`, JSON-LD `LocalBusiness`+`PetStore`, `FAQPage`, `AggregateRating`, OG, canonical, hreflang. O Yorkshire já estava à frente — o trabalho foi corrigir e completar, não criar do zero.
+
+**Deploy:** merge `dev` → `main` → CI/CD (lint → build → GitHub Pages → Lighthouse). Concluído com sucesso.
