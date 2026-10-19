@@ -42,7 +42,7 @@ async function build() {
   if (fs.existsSync(dataSrc)) copyDir(dataSrc, path.join(DIST, "data"));
 
   // Copy static files
-  for (const file of ["robots.txt", "sitemap.xml", "manifest.json"]) {
+  for (const file of ["robots.txt", "sitemap.xml", "manifest.json", "llms.txt"]) {
     const src = path.join(SRC, file);
     if (fs.existsSync(src)) fs.copyFileSync(src, path.join(DIST, file));
   }
