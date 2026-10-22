@@ -40,7 +40,22 @@ if (formLead) {
       `Olá! Meu nome é ${nome}, meu WhatsApp é ${whatsapp}. Gostaria de ser avisado(a) quando houver filhotes de Yorkshire disponíveis. Obrigado!`
     );
     if (typeof fbq !== "undefined") fbq("track", "Lead");
-    window.open(`https://wa.me/5511977118201?text=${msg}`, "_blank");
+
+    const wppUrl = `https://wa.me/5511977118201?text=${msg}`;
+    let aberto = false;
+    const abrir = () => { if (aberto) return; aberto = true; window.open(wppUrl, "_blank"); };
+
+    // Rastreia o envio do formulário como conversão (antes era só Meta, invisível ao Google Ads).
+    // eventCallback garante que o hit saia antes de abrir o WhatsApp (evita subcontagem em mobile).
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
+      event: "whatsapp_click",
+      wpp_origem: "form_lead",
+      wpp_btn: "Formulário de Lead",
+      eventCallback: abrir,
+      eventTimeout: 1200
+    });
+    setTimeout(abrir, 1200);
   });
 }
 
@@ -245,5 +260,32 @@ loadMedia();
     if (!link.closest("#form-lead")) {
       link.href = `https://wa.me/5511977118201?text=${encodeURIComponent(msg)}`;
     }
+
+    // Garante o disparo da conversão antes de navegar para o WhatsApp.
+    // Links wa.me navegam na mesma aba no mobile, o que pode cortar o hit de conversão.
+    link.addEventListener("click", function (e) {
+      if (link.closest("#form-lead")) return;
+      const href = this.href;
+      const novaAba = this.target === "_blank";
+      // Se já abre em nova aba, a página atual permanece e o hit sai normalmente — não intercepta.
+      if (novaAba) {
+        window.dataLayer = window.dataLayer || [];
+        dataLayer.push({ event: "whatsapp_click", wpp_origem: isPago ? "pago" : "organico", wpp_btn: this.innerText?.trim().slice(0, 40) || "link" });
+        return;
+      }
+      // Navegação na mesma aba: segura 700ms para o hit sair, depois navega.
+      e.preventDefault();
+      let foi = false;
+      const ir = () => { if (foi) return; foi = true; window.location.href = href; };
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({
+        event: "whatsapp_click",
+        wpp_origem: isPago ? "pago" : "organico",
+        wpp_btn: this.innerText?.trim().slice(0, 40) || "link",
+        eventCallback: ir,
+        eventTimeout: 700
+      });
+      setTimeout(ir, 700);
+    });
   });
 })();
