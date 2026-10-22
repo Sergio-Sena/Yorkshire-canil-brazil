@@ -274,7 +274,8 @@ h3 {
   display: block;
 }
 
-.hero-h1 {
+.hero-h1,
+.hero-sub {
   position: absolute;
   width: 1px;
   height: 1px;
