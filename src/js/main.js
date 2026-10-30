@@ -244,7 +244,7 @@ function renderVideoSection(container, items, aspect) {
 
 loadMedia();
 
-// WhatsApp UTM tracking — identifica origem do lead
+// WhatsApp UTM tracking: identifica origem do lead
 (function () {
   const params = new URLSearchParams(window.location.search);
   const utmSource = params.get("utm_source");
@@ -267,7 +267,7 @@ loadMedia();
       if (link.closest("#form-lead")) return;
       const href = this.href;
       const novaAba = this.target === "_blank";
-      // Se já abre em nova aba, a página atual permanece e o hit sai normalmente — não intercepta.
+      // Se já abre em nova aba, a página atual permanece e o hit sai normalmente, sem interceptar.
       if (novaAba) {
         window.dataLayer = window.dataLayer || [];
         dataLayer.push({ event: "whatsapp_click", wpp_origem: isPago ? "pago" : "organico", wpp_btn: this.innerText?.trim().slice(0, 40) || "link" });
