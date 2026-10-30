@@ -42,3 +42,6 @@ prompt-atual.txt
 response.json
 src/bot/lambda/response.txt
 src/bot/lambda/response_cost.json
+
+# gstack (global install)
+.amazonq/rules/gstack.md

@@ -106,3 +106,35 @@
    - Mensagem redigida para o Thiago
 
 ### Próxima Sessão — Tarefas em Ordem
+
+---
+
+## 🎯 Radar GEO Avançado — 19/10/2026
+
+Varredura realizada com base no suplemento técnico de GEO, Rastreamento e Qualificação 2026+.
+
+### Estado atual
+| Item | Status |
+|---|---|
+| llms.txt | ✅ Completo — diferenciais, FAQ, contato |
+| robots.txt — bots de IA | ⚠️ Apenas `User-agent: * Allow: /` — bots de IA não declarados explicitamente |
+| JSON-LD LocalBusiness + PetStore | ✅ Implementado |
+| JSON-LD FAQPage | ✅ 7 perguntas |
+| AggregateRating | ✅ 5★ — mas apenas 3 reviews (baixo) |
+| Endereço no Schema | ⚠️ Sem CEP e sem rua — só cidade/estado |
+| Meta Pixel | ⚠️ Comentado no HTML — sem ID real ativo |
+| GTM lazy load | ❌ GTM carrega no `<head>` sem lazy load |
+| GCLID capturado | ❌ Não implementado (documentado como Fase 1 do LIH) |
+| Loop GCLID → CRM → Conversão offline | ❌ Sem CRM — loop não fechado |
+| Clarity / Hotjar (mapas de calor) | ❌ Não instalado |
+
+### Pendências no radar (aguardando ordem de execução)
+```
+[ ] ALTA  — Loop conversão offline: GCLID → CRM → API Google Ads (maior impacto)
+[ ] ALTA  — Loop conversão offline: fbp/fbc → Meta CAPI
+[ ] MÉDIA — robots.txt: declarar GPTBot, ChatGPT-User, Google-Extended, ClaudeBot, PerplexityBot
+[ ] MÉDIA — Schema: adicionar CEP + rua no endereço
+[ ] MÉDIA — Meta Pixel: ativar com ID real
+[ ] MÉDIA — GTM: mover para lazy load (impacto Core Web Vitals)
+[ ] BAIXA — Instalar Microsoft Clarity para mapas de calor e gravações
+```
