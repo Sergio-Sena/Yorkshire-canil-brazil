@@ -191,15 +191,17 @@ function renderVideoSection(container, items, aspect) {
   player.src = first.src;
   playerWrap.appendChild(player);
 
-  // CTA contextual (só para famosos)
+  // CTA contextual
   const hasCta = items.some(i => i.nome);
   if (hasCta) {
+    const ctaText = items[0].cta || "🐾 Quero um filhote como o deles";
+    const ctaMsg = items[0].ctaMsg || "Olá! Vi os vídeos dos famosos no site e quero saber mais sobre os filhotes disponíveis!";
     const cta = document.createElement("a");
     cta.className = "video-section-cta btn-primary";
     cta.target = "_blank";
     cta.rel = "noopener";
-    cta.textContent = "🐾 Quero um filhote como o deles";
-    cta.href = `https://wa.me/5511977118201?text=${encodeURIComponent("Olá! Vi os vídeos dos famosos no site e quero saber mais sobre os filhotes disponíveis!")}`;
+    cta.textContent = ctaText;
+    cta.href = `https://wa.me/5511977118201?text=${encodeURIComponent(ctaMsg)}`;
     playerWrap.appendChild(cta);
   }
 
