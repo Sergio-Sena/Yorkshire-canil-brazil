@@ -78,7 +78,7 @@ reveals.forEach((el) => {
 
 // Dynamic media loader with carousel
 async function loadMedia() {
-  if (!document.getElementById("famosos-grid") && !document.getElementById("emocoes-grid") && !document.getElementById("titulos-videos-grid")) return;
+  if (!document.getElementById("famosos-grid") && !document.getElementById("emocoes-grid") && !document.getElementById("titulos-videos-grid") && !document.getElementById("natv-grid")) return;
   try {
     const res = await fetch("data/media.json");
     const data = await res.json();
@@ -87,6 +87,12 @@ async function loadMedia() {
     const emocoesGrid = document.getElementById("emocoes-grid");
     const titulosVideosGrid = document.getElementById("titulos-videos-grid");
 
+
+    const natvGrid = document.getElementById("natv-grid");
+
+    if (natvGrid && data.natv) {
+      renderVideoSection(natvGrid, data.natv, "16/9");
+    }
 
     if (titulosVideosGrid && data.titulosVideos) {
       renderVideoSection(titulosVideosGrid, data.titulosVideos, "9/16");

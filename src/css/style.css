@@ -711,11 +711,12 @@ h3 {
   object-position: center;
 }
 
-#famosos, #emocoes {
+#famosos, #natv, #emocoes {
   text-align: center;
 }
 
 #famosos-grid,
+#natv-grid,
 #emocoes-grid {
   max-width: 480px;
   margin-left: auto;

@@ -1,4 +1,15 @@
 {
+  "natv": [
+    { "src": "videos/na tv/Video1.mp4", "nome": "Escolinha do João", "poster": "images/posters/natv-Video1.webp" },
+    { "src": "videos/na tv/Video2.mp4", "nome": "Segurança do Pet", "poster": "images/posters/natv-Video2.webp" },
+    { "src": "videos/na tv/video3.mp4", "nome": "Rede Mais Família", "poster": "images/posters/natv-video3.webp" },
+    { "src": "videos/na tv/video4.mp4", "nome": "Rede Mais Família 2", "poster": "images/posters/natv-video4.webp" },
+    { "src": "videos/na tv/video5.mp4", "nome": "Meu Pet Cast", "poster": "images/posters/natv-video5.webp" },
+    { "src": "videos/na tv/video6.mp4", "nome": "Meu Pet Cast 2", "poster": "images/posters/natv-video6.webp" },
+    { "src": "videos/na tv/video7.mp4", "nome": "Denúncia", "poster": "images/posters/natv-video7.webp" },
+    { "src": "videos/na tv/video8.mp4", "nome": "Comprar ou Adotar", "poster": "images/posters/natv-video8.webp" },
+    { "src": "videos/na tv/video9 (Tv record) .mp4", "nome": "Gravação Rede Record", "poster": "images/posters/natv-video9 (Tv record) .webp" }
+  ],
   "titulosVideos": [
     { "src": "videos/promocionais/promocional-institucional.mp4", "poster": "images/posters/promocional-institucional.webp" },
     { "src": "videos/promocionais/promocional-01.mp4", "poster": "images/posters/promocional-01.webp" }
