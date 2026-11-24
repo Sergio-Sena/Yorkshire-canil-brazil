@@ -92,18 +92,22 @@ async function loadMedia() {
 
     if (natvGrid && data.natv) {
       renderVideoSection(natvGrid, data.natv, "16/9");
+      bindWhatsAppLinks();
     }
 
     if (titulosVideosGrid && data.titulosVideos) {
       renderVideoSection(titulosVideosGrid, data.titulosVideos, "9/16");
+      bindWhatsAppLinks();
     }
 
     if (famososGrid && data.famosos) {
       renderVideoSection(famososGrid, data.famosos, "16/9");
+      bindWhatsAppLinks();
     }
 
     if (emocoesGrid && data.emocoes) {
       renderVideoSection(emocoesGrid, data.emocoes, "16/9");
+      bindWhatsAppLinks();
 
       const btnVerTodos = document.getElementById("btn-ver-todos-emocoes");
       if (btnVerTodos && data.emocoesExtras) {
@@ -111,6 +115,7 @@ async function loadMedia() {
           const allItems = [...data.emocoes, ...data.emocoesExtras];
           emocoesGrid.innerHTML = "";
           renderVideoSection(emocoesGrid, allItems, "16/9");
+          bindWhatsAppLinks();
           btnVerTodos.remove();
         });
       }
@@ -252,48 +257,61 @@ function renderVideoSection(container, items, aspect) {
 
 loadMedia();
 
-// WhatsApp UTM tracking: identifica origem do lead
-(function () {
+// WhatsApp UTM tracking: identifica origem do lead e persiste na sessao
+function bindWhatsAppLinks() {
   const params = new URLSearchParams(window.location.search);
   const utmSource = params.get("utm_source");
   const utmMedium = params.get("utm_medium");
   const gclid = params.get("gclid");
-  const isPago = gclid || (utmSource === "google" && utmMedium === "cpc");
+  const isPago = Boolean(gclid || (utmSource === "google" && utmMedium === "cpc"));
 
-  const msg = isPago
-    ? "Olá! Vi vocês no Google e tenho interesse em um filhote de Yorkshire."
-    : "Olá! Encontrei vocês pelo site e tenho interesse em um filhote de Yorkshire.";
+  if (isPago) sessionStorage.setItem("ycb_origem", "pago");
+  const origemFinal = sessionStorage.getItem("ycb_origem") === "pago" ? "pago" : "organico";
 
   document.querySelectorAll('a[href*="wa.me/5511977118201"]').forEach((link) => {
-    if (!link.closest("#form-lead")) {
-      link.href = `https://wa.me/5511977118201?text=${encodeURIComponent(msg)}`;
+    if (link.dataset.wppBound === "true" || link.closest("#form-lead")) return;
+    link.dataset.wppBound = "true";
+
+    const secao =
+      link.closest("section")?.id ||
+      (link.classList.contains("whatsapp-float") ? "flutuante" : "rodape");
+
+    const urlObj = new URL(link.href);
+    if (!urlObj.searchParams.get("text")) {
+      const prefixo = origemFinal === "pago"
+        ? "Olá! Vi vocês no Google"
+        : "Olá! Encontrei vocês pelo site";
+      const complemento = secao === "faq"
+        ? " e gostaria de saber valores e disponibilidade dos filhotes de Yorkshire."
+        : " e tenho interesse em um filhote de Yorkshire.";
+      link.href = `https://wa.me/5511977118201?text=${encodeURIComponent(prefixo + complemento)}`;
     }
 
-    // Garante o disparo da conversão antes de navegar para o WhatsApp.
-    // Links wa.me navegam na mesma aba no mobile, o que pode cortar o hit de conversão.
     link.addEventListener("click", function (e) {
-      if (link.closest("#form-lead")) return;
       const href = this.href;
       const novaAba = this.target === "_blank";
-      // Se já abre em nova aba, a página atual permanece e o hit sai normalmente, sem interceptar.
-      if (novaAba) {
-        window.dataLayer = window.dataLayer || [];
-        dataLayer.push({ event: "whatsapp_click", wpp_origem: isPago ? "pago" : "organico", wpp_btn: this.innerText?.trim().slice(0, 40) || "link" });
-        return;
-      }
-      // Navegação na mesma aba: segura 700ms para o hit sair, depois navega.
+      const btnTexto = this.innerText?.trim().slice(0, 40) || this.getAttribute("aria-label") || "link";
+
       e.preventDefault();
-      let foi = false;
-      const ir = () => { if (foi) return; foi = true; window.location.href = href; };
+      let disparado = false;
+      const navegar = () => {
+        if (disparado) return;
+        disparado = true;
+        novaAba ? window.open(href, "_blank", "noopener") : (window.location.href = href);
+      };
+
       window.dataLayer = window.dataLayer || [];
       dataLayer.push({
         event: "whatsapp_click",
-        wpp_origem: isPago ? "pago" : "organico",
-        wpp_btn: this.innerText?.trim().slice(0, 40) || "link",
-        eventCallback: ir,
-        eventTimeout: 700
+        wpp_origem: origemFinal,
+        wpp_secao: secao,
+        wpp_btn: btnTexto,
+        eventCallback: navegar,
+        eventTimeout: 600
       });
-      setTimeout(ir, 700);
+      setTimeout(navegar, 600);
     });
   });
-})();
+}
+
+bindWhatsAppLinks();
