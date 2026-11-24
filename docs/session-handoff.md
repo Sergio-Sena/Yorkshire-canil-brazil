@@ -4,9 +4,100 @@
 
 ---
 
-## Último Deploy
+## Último Deploy — 30/10/2026
 
-### O que foi feito nesta sessão (data atual):
+### Landing Page
+- Seção `#numeros` removida do frontend (Desde 2014, Melhor Canil, FECAM, Brasil)
+- Botão "Sobre o Canil" oculto (comentado no HTML)
+- Hero-sub: 2 travessões substituídos por vírgula
+- FAQ: travessão `linhagem campeã — sem técnicas` substituído por vírgula
+- Seção **Na Mídia 📺** criada entre `#famosos` e `#emocoes`
+  - 9 vídeos em `src/videos/na tv/` com nomes, posters WebP gerados via ffmpeg
+  - CTA próprio: "📺 Quero um filhote igual ao da TV"
+  - CSS centralizado (`#natv` adicionado às regras de `#famosos`)
+- **`bindWhatsAppLinks()`** refatorado:
+  - `sessionStorage` persiste origem pago/orgânico durante a sessão
+  - `wpp_secao` adicionado ao evento `whatsapp_click`
+  - Mensagem contextual no FAQ (valores/disponibilidade)
+  - Chamado após cada `renderVideoSection()` para capturar CTAs dinâmicos
+- Banners hero: `Bannerdesktop.jpeg` → `hero-banner.webp` (230KB, 1600x900), `BannerMobile.jpeg` → `hero-banner-mobile.webp` (221KB, 1092x1440)
+- GTM `GTM-PTLTVTHG` instalado em todos os 9 HTMLs do blog
+- `lazyLoadVideos` removido do `main.js` (código morto)
+
+### Blog
+- `yorkshire-canil-brazil-historia.html` — página oculta SEO com conteúdo da seção `#numeros` expandido
+- `yorkshire-terrier-sao-paulo.html` — página SEO para SP com keywords da campanha, schema FAQPage
+- Links internos apontando para página SP em `quanto-custa` e `como-escolher`
+- CBKC → SOBRACI em todos os arquivos (4 arquivos, 7 ocorrências)
+- 43 travessões `—` substituídos por vírgula/ponto em 3 arquivos
+- Datas aleatórias nos posts (não mais todos "10 de janeiro"):
+  - `como-cuidar-filhote-yorkshire` → 14/03/2022
+  - `yorkshire-terrier-temperamento` → 22/08/2023
+  - `como-escolher-canil` → 07/05/2024
+  - `quanto-custa-yorkshire` → 18/11/2025
+  - `adotar-ou-comprar-cachorro` → 03/04/2026
+- Imagem substituindo vídeo no post `como-proteger-cachorro-furtos.html`
+- Cards das 2 páginas novas **ainda não adicionados** ao `blog/index.html` (pendente)
+
+### SEO / Sitemap
+- `sitemap.xml` atualizado com `yorkshire-canil-brazil-historia.html` (priority 0.8) e datas corrigidas
+- `yorkshire-terrier-sao-paulo.html` no sitemap (priority 0.9)
+
+### Infraestrutura
+- Git LFS configurado para todos os `.mp4` (53 arquivos, 444MB migrados)
+- `.gitignore` atualizado: arquivos temporários do bot e `.amazonq/prompts/`
+- `sharp` instalado como devDependency para conversão WebP
+- ffmpeg em `C:\ffmpeg\bin\ffmpeg.exe`
+
+---
+
+## Pendências no Radar (aguardando ordem)
+
+### SEO / Código
+- [ ] **#1 CRÍTICO** — Canônico sem www: alinhar `canonical`, `og:url`, JSON-LD, sitemap e robots.txt para `https://yorkshirecanilbrazil.com.br/` (sem www) em todos os arquivos
+- [ ] **#3** — Cards das 2 páginas novas (`historia` e `sao-paulo`) no `blog/index.html`
+- [ ] **#4** — Feed RSS: remover `<link rel="alternate">` do index ou corrigir build *(aguarda escolha: a ou b)*
+- [ ] **#2** — Meta Pixel: preencher ID real ou remover snippet *(aguarda: anuncia no Meta?)*
+- [ ] **#5** — Schema `aggregateRating`: remover se reviews não forem verificáveis *(aguarda confirmação)*
+- [ ] **#6** — Endereço no Schema: expor rua/CEP ou manter só cidade *(aguarda escolha)*
+- [ ] **#7** — Robots.txt: declarar bots de IA (GPTBot, ClaudeBot, etc.) *(aguarda: quer bloquear?)*
+
+### Google Ads / GTM
+- [ ] Configurar acionador GTM: tipo "Evento personalizado", nome `whatsapp_click`
+- [ ] Tag de Conversão Google Ads (`17082407599 / GwLWCJ__4MgaEK-1w9E_`) — "Uma vez por evento"
+- [ ] Confirmar Conversion Linker ativo em "Todas as páginas" no GTM
+- [ ] Eventos GA4 com `wpp_origem`, `wpp_secao`, `wpp_btn`
+- [ ] Pausar/eliminar campanha Wix (autorizado pelo Thiago em 11/08/2026)
+
+### Landing Page
+- [ ] Logo definitiva do cliente
+- [ ] Fotos reais dos filhotes
+- [ ] Depoimentos reais
+- [ ] Deploy final (Cloudflare Pages + domínio) + ativar SEO
+- [ ] Configurar GA4 + Meta Pixel
+- [ ] Validar `renderVideoSection` no celular real
+
+### Bot
+- [ ] Verificar token WhatsApp (erro 400 nos logs)
+- [ ] Testes unitários nos Lambdas críticos (processor, bedrock)
+- [ ] Sentry no frontend dos painéis
+- [ ] Cidades da Grande SP com mesmo preço de SP capital (35 cidades — ver versão anterior do handoff)
+
+---
+
+## Key Insights
+
+- **Deploy**: GitHub Pages, branch `main`, push dispara GitHub Actions (lint + build)
+- **DNS .com.br**: GitHub Pages via registro.br (`185.199.108-111.153`), NS em `a.sec.dns.br`
+- **DNS .com**: Wix (`NS12/13.WIXDNS.NET`), expira mai/2027, redirect 301 para `.com.br`
+- **GTM**: `GTM-PTLTVTHG` com GA4 (`GT-WBKZXHGC`) e Google Ads (`AW-17082407599`)
+- **ffmpeg**: `C:\ffmpeg\bin\ffmpeg.exe`
+- **Git LFS**: ativo para `*.mp4`
+- **API bot**: `https://8x17umz5s7.execute-api.us-east-1.amazonaws.com/dev/` — key: `7e63f385192f40acb7b096d6cab74a13`
+- **Google Ads**: MCC `967-971-4188` | Customer `550-651-2270` | Budget R$220/dia | MAXIMIZE_CONVERSIONS
+- **Número Thiago**: `5511977118201`
+- **Schema FAQ**: erro de texto solto no JSON do `index.html` (pergunta sobre outras raças) — corrigir junto com item #1
+
 
 **Landing Page — Ajustes visuais e de conteúdo**
 - Título da seção famosos: "Famosos que Já Passaram por Aqui" → "ALGUNS FAMOSOS"
