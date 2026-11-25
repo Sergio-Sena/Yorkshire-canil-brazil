@@ -125,6 +125,24 @@ Referência: https://github.com/kylezantos/design-principles
 
 ---
 
+## Google Ads — Checklist 16/nov
+
+> Não mexer em nada antes dessa data. AI Max ativado em 21/out está em fase de aprendizado.
+
+- [ ] Avaliar métricas do período de aprendizado (21/out → 16/nov)
+- [ ] Decidir: manter AI Max ou reverter para Search padrão
+- [ ] Restaurar programações de horário 24h/7d (sem corte de madrugada — pedido do cliente: leads noturnos convertem de manhã)
+- [ ] Restaurar 2 keywords removidas pelo cliente em 1/nov: `[yorkshire canil brazil]` (grupo 05 - Marca) e `[criador de yorkshire]` (grupo 02 - Canil e criador)
+- [ ] Orientar cliente a não aplicar recomendações automáticas pelo app mobile
+
+### Contexto da queda de performance (out/nov 2026)
+- **Causa raiz 1:** AI Max ativado em 21/out por `marketing@sstechnologies-cloud.com` — algoritmo entrou em reaprendizado
+- **Causa raiz 2:** 35 programações de horário removidas em 3/nov sem reposição — campanha ficou 24h sem ajustes
+- Campanha ativa: `[BP] [SS] [.COM.BR] [08.26] - Rede de Pesquisa` | Budget R$220/dia | MAXIMIZE_CONVERSIONS
+- Conta: `550-651-2270` | MCC: `967-971-4188`
+
+---
+
 ## Roadmap / Pendências
 
 ### Bot

@@ -421,3 +421,17 @@ IA WhatsApp → Fecha a venda
 ---
 
 *Última atualização: 13/07/2026*
+
+---
+
+## 📌 Pendências Operacionais (Sena Co. — 11/11/2026)
+
+- [ ] Reativar PMax ou Geração de Lead com sinais de audiência dos leads atuais da Search
+  - NÃO mexer na Search (322 leads, R$16,69/lead, CTR 19,64% — está ótima)
+  - Sinais disponíveis: `All Converters` (8.600 usuários), `All visitors` (1.400), `AdWords optimized list` (1.400)
+  - Script pronto: `scripts/_criar-pmax-yorkshire.mjs` (fazer no dia 16/nov)
+  - Budget teste PMax: R$50/dia por 15 dias (cartão do Sergio)
+- [ ] Estratégia de escala pós-PMax:
+  - Semana 16/nov: PMax R$50/dia | Search R$220/dia
+  - Semana 23/nov: PMax R$80/dia | Search R$190/dia
+  - Semana 30/nov: PMax R$120/dia | Search R$150/dia

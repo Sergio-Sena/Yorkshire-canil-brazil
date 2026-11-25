@@ -1,0 +1,38 @@
+Lembrar de chamar bindWhatsAppLinks(); dentro de loadMedia() após renderVideoSection(...) (incluindo o evento de clique de #btn-ver-todos-emocoes).
+
+4. Configuração no GTM, GA4 e Google Ads
+Acionador (Trigger) no GTM:
+
+Tipo: Evento personalizado (Custom Event)
+
+Nome do evento: whatsapp_click
+
+Disparo: Todos os eventos personalizados (evitar filtros restritivos que impeçam o disparo em alguma seção/origem).
+
+Tag de Conversão do Google Ads (17082407599 / GwLWCJ__4MgaEK-1w9E_):
+
+Configurações avançadas → Opções de disparo: Uma vez por evento.
+
+No Google Ads (Metas → Conversões): conferir se a contagem está em Uma e se a tag Vinculador de conversões (Conversion Linker) está ativa em Todas as páginas no GTM.
+
+Eventos no GA4:
+
+Disparar evento no GA4 em whatsapp_click enviando wpp_origem, wpp_secao e wpp_btn para identificar quais pontos da LP geram mais cliques e quais trazem leads mais qualificados.
+
+5. Ajustes na Landing Page para Aumentar Volume Qualificado
+Qualificação próxima aos CTAs: reforçar perto dos botões de WhatsApp que se trata de criação especializada com pedigree, microchip e vacinas, sem adoção/doação, com atendimento consultivo para disponibilidade, porte ético e condições de pagamento (PIX/cartão).
+
+Clareza acima da dobra (Hero): facilitar o entendimento imediato do diferencial (linhagem campeã, criação responsável, entrega em SP e Brasil) e o acesso rápido ao atendimento.
+
+Mensagens contextuais por intenção: adaptar o texto inicial conforme a seção (faq, filhotes, vídeos, formulário #form-lead) para agilizar a triagem no WhatsApp.
+
+6. Rastreamento Ponta a Ponta (Do Anúncio até a Venda)
+Etapa do Funil	Onde Ocorre	Como Registrar	Ação no Google Ads
+1. Clique no Anúncio	Google Ads	gclid automático na URL	Registra clique e custo da campanha
+2. Intenção de Contato	Landing Page	Evento whatsapp_click via GTM	Conversão de topo/meio de funil
+3. Lead Qualificado	WhatsApp (Atendimento)	Classificar lead com interesse real, alinhado a porte, investimento e disponibilidade	Conversão Offline / Avançada (Lead Qualificado)
+4. Reserva / Venda	WhatsApp / Contrato	Registrar data do 1º contato, nome, telefone (+55...), origem, status (Vendido) e valor real (R$)	Conversão Offline / Avançada (Compra com Valor)
+Rotina Operacional Sugerida
+Registrar todos os leads que chegam no WhatsApp em planilha ou CRM com: Data/Hora do 1º Contato, Nome, Telefone (+55...), Origem (Google / Orgânico), Status (Curioso / Qualificado / Vendido) e Valor da Venda (R$).
+
+Utilizar Conversões Otimizadas para Leads no Google Ads: importar periodicamente os contatos marcados como Qualificados ou Vendidos (com telefone em formato E.164 e data/hora do contato) para treinar o algoritmo com base em receita e qualificação real, não apenas em cliques.
