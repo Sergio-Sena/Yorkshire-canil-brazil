@@ -45,8 +45,7 @@ if (formLead) {
     let aberto = false;
     const abrir = () => { if (aberto) return; aberto = true; window.open(wppUrl, "_blank"); };
 
-    // Rastreia o envio do formulário como conversão (antes era só Meta, invisível ao Google Ads).
-    // eventCallback garante que o hit saia antes de abrir o WhatsApp (evita subcontagem em mobile).
+    if (typeof gtag !== "undefined") gtag("event", "conversion", { send_to: "AW-17082407599/GwLWCJ__4MgaEK-1w9E_", event_callback: abrir });
     window.dataLayer = window.dataLayer || [];
     dataLayer.push({
       event: "whatsapp_click",
@@ -300,6 +299,7 @@ function bindWhatsAppLinks() {
         novaAba ? window.open(href, "_blank", "noopener") : (window.location.href = href);
       };
 
+      if (typeof gtag !== "undefined") gtag("event", "conversion", { send_to: "AW-17082407599/GwLWCJ__4MgaEK-1w9E_", event_callback: navegar });
       window.dataLayer = window.dataLayer || [];
       dataLayer.push({
         event: "whatsapp_click",
